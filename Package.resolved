@@ -1,0 +1,32 @@
+{
+  "pins" : [
+    {
+      "identity" : "logmanager",
+      "kind" : "remoteSourceControl",
+      "location" : "https://github.com/Appracatappra/LogManager",
+      "state" : {
+        "revision" : "aa1c1a9d15ea104a590df766af3f81da5afabab7",
+        "version" : "1.0.2"
+      }
+    },
+    {
+      "identity" : "simpleserializer",
+      "kind" : "remoteSourceControl",
+      "location" : "https://github.com/Appracatappra/SimpleSerializer",
+      "state" : {
+        "revision" : "6fc8eb78aade4f00732518c8696ff8a68b83e7b2",
+        "version" : "1.0.3"
+      }
+    },
+    {
+      "identity" : "swiftletutilities",
+      "kind" : "remoteSourceControl",
+      "location" : "https://github.com/Appracatappra/SwiftletUtilities",
+      "state" : {
+        "revision" : "80e32875f11f82934d27a06f42b7f33789e0f65b",
+        "version" : "1.1.10"
+      }
+    }
+  ],
+  "version" : 2
+}
