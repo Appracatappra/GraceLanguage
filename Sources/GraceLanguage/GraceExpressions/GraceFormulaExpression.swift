@@ -89,6 +89,10 @@ open class GraceFormulaExpression:GraceExpression {
             switch operation {
             case "=":
                 return GraceVariable(name: "result", value: (leftValue.bool == rightValue.bool))
+            case "&":
+                return GraceVariable(name: "result", value: (leftValue.bool && rightValue.bool))
+            case "|":
+                return GraceVariable(name: "result", value: (leftValue.bool || rightValue.bool))
             case "!=":
                 return GraceVariable(name: "result", value: (leftValue.bool != rightValue.bool))
             default:

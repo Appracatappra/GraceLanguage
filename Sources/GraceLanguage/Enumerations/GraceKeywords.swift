@@ -67,6 +67,8 @@ public enum GraceKeyword: String {
     case closedCurlyBracket = "}"
     case comma = ","
     case equal = "="
+    case andSymbol = "&"
+    case orSymbol = "|"
     case notEqual = "!="
     case lessThan = "<"
     case greaterThan = ">"
