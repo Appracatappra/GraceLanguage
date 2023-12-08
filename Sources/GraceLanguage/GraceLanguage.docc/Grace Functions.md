@@ -106,7 +106,22 @@ main {
 }
 ```
 
-> **NOTE** When calling a Grace `function` you simply list the property values without the names in the order that they were defined.
+> **NOTE** When calling a Grace `function` you simply list the property values without the names in the order that they were defined. Additionally, the name of the function must be proceeded by a `@`. Use the `call` statement to call a function outside of a formula.
+
+Grace `functions` can also be called inside of a formula. For example:
+
+```
+main {
+	var n:int;
+	
+	let $n = (@add(1,1) + 1);
+}
+
+function add(a:int, b:int) returns int {
+	return ($a + $b);
+}
+```
+
 
 Grace `functions` fully support recursion such as the following example:
 
