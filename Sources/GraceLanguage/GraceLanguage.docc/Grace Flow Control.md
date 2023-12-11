@@ -1,10 +1,10 @@
 # Grace Flow Control
 
-Grace supports `if-then-else` and `switch-case-default` statements to control the program flow.
+Grace supports `if-then-else` and `switch-case-default` statements to control the flow of the program.
 
 ## Overview
 
-Typically, you'll mostly be working with `if` statements in a Grace Program in the form:
+If-then statements in a Grace Program are in the form:
 
 ```
 if (value operator value) {
@@ -78,3 +78,5 @@ switch $flag {
 }
 
 ```
+
+When executed, the value of the variable `first` will be set to `false`.

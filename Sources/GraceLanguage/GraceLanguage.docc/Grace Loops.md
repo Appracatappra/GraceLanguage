@@ -11,6 +11,8 @@ Grace contains four main types of looping mechanisms:
 * `while` - Loops while a condition is `true`.
 * `repeat-until` - Loops until a condition is `true`.
 
+The following sections will go over each in detail.
+
 ### Iterate-In
 
 `Iterate` takes the form:
@@ -54,6 +56,8 @@ for n in 0 to (@count($words) - 1) {
 ```
 
 This is functionally equivalent to the `iterate` function above.
+
+> **NOTE:** The `to` value must be greater than the `from` value currently. This will be addressed in future releases.
 
 ### While
 

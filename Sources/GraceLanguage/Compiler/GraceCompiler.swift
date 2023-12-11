@@ -943,12 +943,12 @@ open class GraceCompiler {
         }
         
         // Add random number generator.
-        executable.register(name: "random", parameterNames: ["to", "from"], parameterTypes: [.int, .int], returnType: .int) { parameters in
+        executable.register(name: "random", parameterNames: ["from", "to"], parameterTypes: [.int, .int], returnType: .int) { parameters in
             var value:Int = 0
             
-            if let to = parameters["to"] {
-                if let from = parameters["from"] {
-                    value = Int.random(in: to.int...from.int)
+            if let to = parameters["from"] {
+                if let from = parameters["to"] {
+                    value = Int.random(in: from.int...to.int)
                 }
             }
             
@@ -1160,24 +1160,7 @@ open class GraceCompiler {
             return GraceVariable(name: "result", value: result, type: .bool)
         }
         
-        // Add right string.
-        executable.register(name: "rightString", parameterNames: ["text", "length"], parameterTypes: [.string, .int], returnType: .string) { parameters in
-            var result:String = ""
-            
-            if let text = parameters["text"] {
-                let max = text.count - 1
-                if let length = parameters["length"] {
-                    let min = max - length.int
-                    for n in min...max {
-                        result += "\(text.string[n])"
-                    }
-                }
-            }
-            
-            return GraceVariable(name: "result", value: result, type: .bool)
-        }
-        
-        // Add right string.
+        // Add mid string.
         executable.register(name: "midString", parameterNames: ["text", "start", "length"], parameterTypes: [.string, .int, .int], returnType: .string) { parameters in
             var result:String = ""
             

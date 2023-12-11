@@ -6,7 +6,7 @@ Grace features "loosely typed" variables that are highly mutable and interchange
 
 In Grace, the `var` keyword is used to define a variable and variables are scoped to the level they are created in. So a variable created inside of a `function` would not be accessible inside another `function`. Additionally, a variable created inside of a `if` statement would not be accessible outside of that `if` statement.
 
-The exception to this rule is variables created inside of the **Global Space**, they accessible everywhere inside of the Grace program.
+The exception to this rule is variables created inside of the **Global Space**, they are accessible everywhere inside of the Grace program.
 
 It should also be noted that creating a variable of the same name as a variable at the same scope level will replace the existing variable with the new one.
 
@@ -27,6 +27,8 @@ Additionally, you have the following special types:
 
 The base types can be turned into arrays using the `array` keyword after the type. For example: `var n:int array;` would define an integer array called `n`.
 
+> A `GraceVariable` will automatically be turned into an `array` if you treat it like one later in your code. For example, appending an item to the variable using the array manipulation routines.
+
 ### Creating Variables
 
 As stated above, variables are created using the `var` keyword and take the form:
@@ -41,7 +43,7 @@ The minimal requirement is name and type, the default value is optional. Default
 * An enumeration value `var color:enumeration Colors = #Color~red;`
 * The result of an expression `var z:int = ($y - $n);`
 
-### Mofidying Variables
+### Modifying Variables
 
 When modifying a variable, start with the `let` keyword and use the following form:
 
@@ -54,6 +56,18 @@ The following types of expressions are supported:
 * Functions `let $y = @add($n, $x);`
 * Enumerations `let $color = #Colors~blue;`
 * Expressions `let $z = ($n + $y);`
+
+### Incrementing and Decrementing Ints/Floats
+
+For Grace Variables that hold `int` or `float` values, you can used the `increment` and `decrement` instructions to increment or decrement the given value by 1. For example:
+
+```
+main {
+	var n:int = 10;
+	increment $n;
+	decrement $n;
+}
+```
 
 ### Working With Arrays
 
@@ -79,17 +93,46 @@ You can either append a new value to the end of an array, or insert it at a spec
 
 `add` value `to $` array name [`at index` value] `;`
 
-Using the same `colors` example above, `add "olive" to $colors;` would append "olive" to the end of the array and `add "pink" to $colors at index 1;` would insert "pink" after "red".
+Using the same `colors` example above:
+
+```
+add "olive" to $colors;
+```
+
+Would append "olive" to the end of the array.
+
+You can also insert an item at a specific index:
+
+```
+add "pink" to $colors at index 1;
+```
+
+Would insert "pink" after "red".
 
 Use the `delete` keyword to remove an item from an array in the form:
 
 `delete index` value `from $` array name `;`
 
-So `delete index 0 from $colors;` would remove "red" from our array.
+To remove "red" from our array, use: 
 
-You can completely empty an array using the `empty` keyword, for example `empty $colors;`.
+```
+delete index 0 from $colors;
+```
 
-If you import the `StandardLib` into your Grace Program, you can use the `@count` function to get the number of items in an array, for example "@count($colors)".
+You can completely empty an array using the `empty` keyword, for example:
+
+```
+empty $colors;
+```
+
+If you import the `StandardLib` into your Grace Program, you can use the `@count` function to get the number of items in an array, for example:
+
+```
+import StandardLib;
+...
+
+let n:int = @count($colors);
+```
 
 ### Working With Enumerations
 
@@ -133,7 +176,7 @@ main {
 
 It creates a variable called `background` that conforms to the `Colors` `enumeration` and sets the default value to `green`.
 
-> **NOTE:** When dereferencing an `enumeration` you'll use the `#` character just before the `enumeration's` name. Additionally, use the `~` to separate the `enumeration` name from the property name.
+> When dereferencing an `enumeration` you'll use the `#` character just before the `enumeration's` name. Additionally, use the `~` to separate the `enumeration` name from the property name.
 
 Since the Grace Compiler knows which `enumeration` variable `background` belongs to, we could have used the shortcut syntax:
 
@@ -159,7 +202,7 @@ structure name {
 }
 ```
 
-> **NOTE:** Grace only supports simple `structures` at this time that are only composed of `string`, `bool`, `int` or `float` types with no substructures or arrays.
+> Grace only supports simple `structures` at this time that are only composed of `string`, `bool`, `int` or `float` types with no substructures or arrays.
 
 Take the following example:
 
@@ -198,4 +241,4 @@ let $user~name = "John Doe";
 call @printf("User Name = {0}, email: {1}", [$user~name, $user~email]);
 ``` 
 
-> **NOTE:** When dereferencing a `structure` you'll use the `$` character just before the `structure's` name (just like any other Grace Variable). Additionally, use the `~` to separate the `structure` variable name from the property name.
+> When dereferencing a `structure` you'll use the `$` character just before the `structure's` name (just like any other Grace Variable). Additionally, use the `~` to separate the `structure` variable name from the property name.

@@ -124,7 +124,7 @@ open class GraceRuntime {
     /// - Parameter script: The text of the snipit that does not contain a `main` definition.
     /// - Returns: Returns the results of the execution as a `GraceVariable` or `nil` if nothing is returned.
     @discardableResult public func run(script:String) throws -> GraceVariable? {
-        let program:String = "import StandardLib; main{\(script)}"
+        let program:String = "import StandardLib; import StringLib; main{\(script)}"
         
         return try run(program: program)
     }
