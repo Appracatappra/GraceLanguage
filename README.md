@@ -1,8 +1,8 @@
 # GraceLanguage
 
-![](https://img.shields.io/badge/license-MIT-green) ![](https://img.shields.io/badge/maintained%3F-Yes-green) ![](https://img.shields.io/badge/swift-5.4-green) ![](https://img.shields.io/badge/iOS-13.0-red) ![](https://img.shields.io/badge/macOS-10.15-red) ![](https://img.shields.io/badge/tvOS-13.0-red) ![](https://img.shields.io/badge/watchOS-6.0-red) ![](https://img.shields.io/badge/release-v1.0.8-blue)
+![](https://img.shields.io/badge/license-MIT-green) ![](https://img.shields.io/badge/maintained%3F-Yes-green) ![](https://img.shields.io/badge/swift-5.4-green) ![](https://img.shields.io/badge/iOS-17.0-red) ![](https://img.shields.io/badge/macOS-14.0-red) ![](https://img.shields.io/badge/tvOS-17.0-red) ![](https://img.shields.io/badge/watchOS-10.0-red) ![](https://img.shields.io/badge/dependency-LogManager-orange) ![](https://img.shields.io/badge/dependency-SimpleSerializer-orange) ![](https://img.shields.io/badge/dependency-SwiftletUtilities-orange) ![](https://img.shields.io/badge/release-v1.0.0-blue)
 
-`GraceLanguage` provides a Turning-Complete scripting language can be used in applications such as spreadsheet calculations, database manipulations or game engines.
+`GraceLanguage` provides a Turning-Complete scripting language can be used in applications such as spreadsheet calculations, database manipulations or game engines. 
 
 ## Overview
 
@@ -15,6 +15,20 @@ Grace was named in honor of [Rear Admiral Grace M. Hopper](https://en.wikipedia.
 From Wikipedia:
 
 > One of the first programmers of the Harvard Mark I computer, she was a pioneer of computer programming. Hopper was the first to devise the theory of machine-independent programming languages, and the FLOW-MATIC programming language she created using this theory was later extended to create COBOL, an early high-level programming language still in use today.
+
+## Installation
+
+**Swift Package Manager** (Xcode 11 and above)
+
+1. In Xcode, select the **File** > **Add Package Dependency…** menu item.
+2. Paste `https://github.com/Appracatappra/GraceLanguage.git` in the dialog box.
+3. Follow the Xcode's instruction to complete the installation.
+
+> Why not CocoaPods, or Carthage, or etc?
+
+Supporting multiple dependency managers makes maintaining a library exponentially more complicated and time consuming.
+
+Since, the **Swift Package Manager** is integrated with Xcode 11 (and greater), it's the easiest choice to support going further.
 
 
 # Basic Syntax And Structure
