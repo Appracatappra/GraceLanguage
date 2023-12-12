@@ -1,6 +1,6 @@
 # GraceLanguage
 
-![](https://img.shields.io/badge/license-MIT-green) ![](https://img.shields.io/badge/maintained%3F-Yes-green) ![](https://img.shields.io/badge/swift-5.4-green) ![](https://img.shields.io/badge/iOS-17.0-red) ![](https://img.shields.io/badge/macOS-14.0-red) ![](https://img.shields.io/badge/tvOS-17.0-red) ![](https://img.shields.io/badge/watchOS-10.0-red) ![](https://img.shields.io/badge/dependency-LogManager-orange) ![](https://img.shields.io/badge/dependency-SimpleSerializer-orange) ![](https://img.shields.io/badge/dependency-SwiftletUtilities-orange) ![](https://img.shields.io/badge/release-v1.0.0-blue)
+![](https://img.shields.io/badge/license-MIT-green) ![](https://img.shields.io/badge/maintained%3F-Yes-green) ![](https://img.shields.io/badge/swift-5.4-green) ![](https://img.shields.io/badge/iOS-17.0-red) ![](https://img.shields.io/badge/macOS-14.0-red) ![](https://img.shields.io/badge/tvOS-17.0-red) ![](https://img.shields.io/badge/watchOS-10.0-red) ![](https://img.shields.io/badge/dependency-LogManager-orange) ![](https://img.shields.io/badge/dependency-SimpleSerializer-orange) ![](https://img.shields.io/badge/dependency-SwiftletUtilities-orange)
 
 `GraceLanguage` provides a Turning-Complete scripting language can be used in applications such as spreadsheet calculations, database manipulations or game engines. 
 
@@ -8,7 +8,7 @@
 
 Grace is a [Turning-Complete](https://en.wikipedia.org/wiki/Turing_completeness) scripting language written 100% in pure Swift that can be used in applications such as spreadsheet calculations, database manipulations or game engines.
 
-Grace supports features such as global & local variables, enumerations, libraries, functions, and limited structure support (see Structures details). Additionally, Grace was designed to be easily extended by **Registering** external functions. This allow Grace to be fully interoperable with its host language and program.
+Grace supports features such as global & local variables, enumerations, libraries, functions, and limited structure support (see *Grace Variables > Working with Structures* documentation). Additionally, Grace was designed to be easily extended by **Registering** external functions. This allow Grace to be fully interoperable with its host language and program.
 
 Grace was named in honor of [Rear Admiral Grace M. Hopper](https://en.wikipedia.org/wiki/Grace_Hopper). Not only did she come up with the idea of high-level computer programming languages, but we also have her to thank for the term "debugging".
 
@@ -189,8 +189,30 @@ main{
 }
 ```
 
+### Returning An Execution Result
+
+All of the execution methods built into the `GraceCompiler` can return a result to the calling program. For example:
+
+```
+let code = """
+import StandardLib;
+    
+main {
+    var n:int = 5;
+    var x:int = 5;
+    
+    return ($n + $x);
+}
+"""
+    
+let result = try GraceRuntime.shared.run(program: code)
+print("The result is: \(result?.int)")
+```
+
+Upon executing the above code `result` will be a `GraceVariable` containing `10`. 
+
 For more information, please see the included documentation.
 
 # Documentation
 
-The **GraceLanguage Package** includes full DocC documentation with articles all of Grace's features.
+The **GraceLanguage Package** includes full **DocC Documentation** for all of Grace's features.

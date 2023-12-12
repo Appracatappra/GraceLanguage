@@ -1,12 +1,22 @@
 import XCTest
 @testable import GraceLanguage
+import SwiftletUtilities
 
 final class GraceLanguageTests: XCTestCase {
-    func testExample() throws {
-        // XCTest Documentation
-        // https://developer.apple.com/documentation/xctest
-
-        // Defining Test Cases and Test Methods
-        // https://developer.apple.com/documentation/xctest/defining_test_cases_and_test_methods
+    func testGrace() throws {
+        let code = """
+        import StandardLib;
+        
+        main {
+            var n:int = 5;
+            var x:int = 5;
+        
+            return ($n + $x);
+        }
+        """
+        
+        let result = try GraceRuntime.shared.run(program: code)
+        
+        XCTAssert(result?.int == 10)
     }
 }

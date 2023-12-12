@@ -57,7 +57,7 @@ for n in 0 to (@count($words) - 1) {
 
 This is functionally equivalent to the `iterate` function above.
 
-> **NOTE:** The `to` value must be greater than the `from` value currently. This will be addressed in future releases.
+>  The `to` value must be greater than the `from` value currently. This will be addressed in future releases.
 
 ### While
 

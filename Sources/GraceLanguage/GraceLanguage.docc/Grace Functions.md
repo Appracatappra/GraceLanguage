@@ -39,11 +39,35 @@ var user:structure UserAccount = new UserAccount(name:"Jane Doe", email:"jdoe@ma
 
 > There can one be one `main function` in a Grace Program.
 
+### Returning An Execution Result From Main
+
+All of the execution methods built into the `GraceCompiler` can return a result to the calling program. For example:
+
+```
+let code = """
+import StandardLib;
+    
+main {
+    var n:int = 5;
+    var x:int = 5;
+    
+    return ($n + $x);
+}
+"""
+    
+let result = try GraceRuntime.shared.run(program: code)
+print("The result is: \(result?.int)")
+```
+
+Upon executing the above code `result` will be a `GraceVariable` containing `10`.
+
+> If you want to return a value to the `GraceRuntime` upon successful execution of the `main function`, you simply include the `return` statement with the value that you want to return and the caller will receive a `GraceVariable` with the value. You don't have to specifically declare that `main returns` a value, a default return type of `any` is implicitly declared by the `GraceCompiler`.
+
 ### Grace Functions
 
 Grace contains functions defined in the **Global Space** that support optional parameters and return an optional value with full recursion support as well. 
 
-> Grace does not support sub functions, sub structures or sub enumerations at this time.
+> Grace does not support sub functions, sub structures or sub enumerations at this time. Additionally, Grace currently does not support function overloading or optional parameters.
 
 Functions are defined in the form:
 
