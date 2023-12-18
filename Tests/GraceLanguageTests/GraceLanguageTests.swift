@@ -19,4 +19,9 @@ final class GraceLanguageTests: XCTestCase {
         
         XCTAssert(result?.int == 10)
     }
+    
+    func testMacro() throws {
+        let result = try GraceRuntime.shared.expandMacros(in: "The answer is: @intMath(40,'+',2)")
+        XCTAssert(result == "The answer is: 42")
+    }
 }

@@ -59,6 +59,13 @@ open class GraceCompiler {
         externalFunctions[name] = function
     }
     
+    /// Checks to see if the given function name has already been defined.
+    /// - Parameter name: The name of the function that you are checking for.
+    /// - Returns: Returns `true` if the function has been defined, else returns `false.`
+    public func hasFunction(name:String) -> Bool {
+        return externalFunctions.keys.contains(name)
+    }
+    
     // !!!: Compiler
     /// Compiles the give Grace Program into a `GraceExecutable`.
     /// - Parameter program: The text containing Grace Program.
@@ -89,6 +96,8 @@ open class GraceCompiler {
                     ImportStandardLibrary(to: executable)
                 case "StringLib":
                     ImportStringLibrary(to: executable)
+                case "MacroLib":
+                    ImportMacroLibrary(to: executable)
                 default:
                     throw GraceCompilerError.unknownLibrary(message: "Unknown library '\(library)' in Import call.")
                 }
@@ -849,6 +858,17 @@ open class GraceCompiler {
     private func getNextKeyword(from tokenizer:GraceTokenizer, allowsUnknown:Bool = false) throws -> GraceKeyword {
         // Get next keyword
         let element = tokenizer.pop()
+        
+        // Is this a single or double quoted string?
+        switch element.type {
+        case .doubleQuotedString, .singleQuotedString:
+            // Return token and return unknown
+            tokenizer.replace(element: element)
+            return .unknown
+        default:
+            break
+        }
+        
         if let keyword = GraceKeyword.get(fromString: element.value) {
             return keyword
         } else {
@@ -1137,7 +1157,7 @@ open class GraceCompiler {
                 }
             }
             
-            return GraceVariable(name: "result", value: result, type: .bool)
+            return GraceVariable(name: "result", value: result, type: .string)
         }
         
         // Add right string.
@@ -1157,7 +1177,7 @@ open class GraceCompiler {
                 }
             }
             
-            return GraceVariable(name: "result", value: result, type: .bool)
+            return GraceVariable(name: "result", value: result, type: .string)
         }
         
         // Add mid string.
@@ -1184,7 +1204,171 @@ open class GraceCompiler {
                 }
             }
             
-            return GraceVariable(name: "result", value: result, type: .bool)
+            return GraceVariable(name: "result", value: result, type: .string)
+        }
+    }
+    
+    /// Imports the macro library into the given `GraceExecutable`.
+    /// - Parameter executable: The `GraceExecutable` to import the library into.
+    private func ImportMacroLibrary(to executable:GraceExecutable) {
+        
+        // Add `If` function.
+        executable.register(name: "if", parameterNames: ["condition", "isTrue", "isFalse"], parameterTypes: [.bool, .any, .any], returnType: .string) { parameters in
+            var result:String = ""
+            
+            if let condition = parameters["condition"] {
+                if condition.bool {
+                    if let text = parameters["isTrue"] {
+                        result = text.string
+                    } else {
+                        result = "**@IF ERROR**"
+                    }
+                } else {
+                    if let text = parameters["isFalse"] {
+                        result = text.string
+                    }
+                }
+            } else {
+                result = "**@IF ERROR**"
+            }
+            
+            return GraceVariable(name: "result", value: result, type: .string)
+        }
+        
+        // Add `randomString` function.
+        executable.register(name: "randomString", parameterNames: ["items"], parameterTypes: [.string], returnType: .string) { parameters in
+            var result:String = ""
+            
+            if let items = parameters["items"] {
+                let index = Int.random(in: 0..<items.count)
+                result = items.string(index)
+            } else {
+                result = "**@RANDOMSTRING ERROR**"
+            }
+            
+            return GraceVariable(name: "result", value: result, type: .string)
+        }
+        
+        // Add `selectString` function.
+        executable.register(name: "selectString", parameterNames: ["part", "items"], parameterTypes: [.int ,.string], returnType: .string) { parameters in
+            var result:String = ""
+            
+            if let part = parameters["part"] {
+                if let items = parameters["items"] {
+                    var index = part.int
+                    if index < 0 || index >= items.count {
+                        index = 0
+                    }
+                    result = items.string(index)
+                } else {
+                    result = "**@SELECTSTRING ERROR**"
+                }
+            } else {
+                result = "**@SELECTSTRING ERROR**"
+            }
+            
+            return GraceVariable(name: "result", value: result, type: .string)
+        }
+        
+        // Add `intMath` function.
+        executable.register(name: "intMath", parameterNames: ["operandA", "operation", "operandB"], parameterTypes: [.int, .string, .int], returnType: .int) { parameters in
+            let result:GraceVariable = GraceVariable(name: "result", value: "0", type: .int)
+            
+            if let operandA = parameters["operandA"] {
+                if let operation = parameters["operation"] {
+                    if let operandB = parameters["operandB"] {
+                        switch operation.string {
+                        case "+":
+                            result.int = operandA.int + operandB.int
+                        case "-":
+                            result.int = operandA.int - operandB.int
+                        case "*":
+                            result.int = operandA.int * operandB.int
+                        case "/":
+                            result.int = operandA.int / operandB.int
+                        default:
+                            result.string = "**@INTMATH ERROR: \(operation.string)**"
+                        }
+                    } else {
+                        result.string = "**@INTMATH ERROR: operandB**"
+                    }
+                } else {
+                    result.string = "**@INTMATH ERROR: operation**"
+                }
+            } else {
+                result.string = "**@INTMATH ERROR: operandA**"
+            }
+            
+            return result
+        }
+        
+        // Add `intMath` function.
+        executable.register(name: "floatMath", parameterNames: ["operandA", "operation", "operandB"], parameterTypes: [.float, .string, .float], returnType: .float) { parameters in
+            let result:GraceVariable = GraceVariable(name: "result", value: "0", type: .float)
+            
+            if let operandA = parameters["operandA"] {
+                if let operation = parameters["operation"] {
+                    if let operandB = parameters["operandB"] {
+                        switch operation.string {
+                        case "+":
+                            result.float = operandA.float + operandB.float
+                        case "-":
+                            result.float = operandA.float - operandB.float
+                        case "*":
+                            result.float = operandA.float * operandB.float
+                        case "/":
+                            result.float = operandA.float / operandB.float
+                        default:
+                            result.string = "**@INTMATH ERROR: \(operation)**"
+                        }
+                    } else {
+                        result.string = "**@INTMATH ERROR: operandB**"
+                    }
+                } else {
+                    result.string = "**@INTMATH ERROR: operation**"
+                }
+            } else {
+                result.string = "**@INTMATH ERROR: operandA**"
+            }
+            
+            return result
+        }
+        
+        // Add `formatFloat` function.
+        executable.register(name: "formatFloat", parameterNames: ["number"], parameterTypes: [.float], returnType: .float) { parameters in
+            var result:String = ""
+            
+            if let number = parameters["number"] {
+                let value = number.float
+                let numberFormatter = NumberFormatter()
+                numberFormatter.numberStyle = .decimal
+                if let formattedNumber = numberFormatter.string(from: NSNumber(value:value)) {
+                    result = formattedNumber
+                } else {
+                    result = "**@FORMATFLOAT ERROR**"
+                }
+            } else {
+                result = "**@FORMATFLOAT ERROR**"
+            }
+            
+            return GraceVariable(name: "result", value: result, type: .string)
+        }
+        
+        // Add `expandMacros` function.
+        executable.register(name: "expandMacros", parameterNames: ["text"], parameterTypes: [.string], returnType: .string) { parameters in
+            var result:String = ""
+            
+            if let text = parameters["text"] {
+                do {
+                    result = try GraceRuntime.shared.expandMacros(in: text.string)
+                } catch {
+                    result = "**@EXPANDMACROS ERROR: \(error)**"
+                }
+            } else {
+                result = "**@EXPANDMACROS ERROR**"
+            }
+            
+            return GraceVariable(name: "result", value: result, type: .string)
         }
     }
 }

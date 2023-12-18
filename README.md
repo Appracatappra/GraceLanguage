@@ -183,6 +183,7 @@ Using this function, the snippet of code will be wrapped in the following Grace 
 ```
 import StandardLib;
 import StringLib;
+import MacroLib;
 
 main{
 	// Your code goes here...
@@ -211,8 +212,18 @@ print("The result is: \(result?.int)")
 
 Upon executing the above code `result` will be a `GraceVariable` containing `10`. 
 
+### Expanding String Macros
+
+The `GraceRuntime.expandMacros` function can expand **Grace Function Macros** inside of a given string by executing the named function and inserting the result in the string. For example:
+
+```
+let text = GraceRuntime.shared.expandMacros(in: "The answer is: @intMath(40,'+',2)")
+```
+
+After running the above code, the value of `text` will be `The answer is: 42`.
+
 For more information, please see the included documentation.
 
 # Documentation
 
-The **GraceLanguage Package** includes full **DocC Documentation** for all of Grace's features.
+The **Package** includes full **DocC Documentation** for all features.
