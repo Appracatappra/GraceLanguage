@@ -1,0 +1,12 @@
+version: 1
+builder:
+  configs:
+  - platform: ios
+    scheme: GraceLanguage
+  - platform: macos-xcodebuild
+    scheme: GraceLanguage
+  - platform: tvos
+    scheme: GraceLanguage
+  - platform: watchos
+    scheme: GraceLanguage
+  - documentation_targets: [GraceLanguage]
