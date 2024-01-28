@@ -41,6 +41,22 @@ final class GraceLanguageTests: XCTestCase {
         XCTAssert(result?.int == -5)
     }
     
+    func testTrueNegative() throws {
+        let code = """
+        import StandardLib;
+        
+        main {
+            var n:int = -5;
+        
+            return @testMe(-5);
+        }
+        """
+        
+        let result = try GraceRuntime.shared.run(program: code)
+        
+        XCTAssert(result?.int == -5)
+    }
+    
     func testNegativeFloat() throws {
         let code = """
         import StandardLib;
@@ -71,5 +87,58 @@ final class GraceLanguageTests: XCTestCase {
         let result = try GraceRuntime.shared.run(program: code)
         
         XCTAssert(result?.float == 4)
+    }
+    
+    func testNot() throws {
+        let code = """
+        import StandardLib;
+        
+        main {
+            var n:bool = false;
+        
+            return not @flip($n);
+        }
+        
+        function flip(n:bool) returns bool {
+            return $n;
+        }
+        """
+        
+        let result = try GraceRuntime.shared.run(program: code)
+        
+        XCTAssert(result?.bool == true)
+    }
+    
+    func testEmptyStringA() throws {
+        let code = """
+        import StandardLib;
+        
+        main {
+            var n:string = 'xyz';
+        
+            return ($n != '');
+        }
+        """
+        
+        let result = try GraceRuntime.shared.run(program: code)
+        
+        XCTAssert(result?.bool == true)
+    }
+    
+    func testEmptyStringB() throws {
+        let code = """
+        import StandardLib;
+        
+        main {
+            var n:string = '';
+        
+            return $n;
+        }
+        """
+        
+        let result = try GraceRuntime.shared.run(program: code)
+        let text = result?.string
+        
+        XCTAssert(text == "")
     }
 }

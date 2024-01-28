@@ -627,6 +627,10 @@ open class GraceCompiler {
             return GraceConstantExpression(value: "null")
         case .voidKey:
             return GraceConstantExpression(value: "void")
+        case .minus:
+            // Assume negated constant numerical espression.
+            let element = tokenizer.pop()
+            return GraceConstantExpression(value: "-\(element.value)")
         default:
             // Assume constant
             let element = tokenizer.pop()

@@ -114,7 +114,12 @@ open class GraceVariable {
     /// Gets or sets the value as a string.
     public var string:String {
         get {
-            return rawValue[0]
+            // Handle an empty string marker from the tokenizer.
+            if rawValue[0] == GraceKeyword.emptyStringKey.rawValue {
+                return ""
+            } else {
+                return rawValue[0]
+            }
         }
         set {
             rawValue[0] = newValue
@@ -304,7 +309,12 @@ open class GraceVariable {
             return ""
         }
         
-        return rawValue[index]
+        // Handle an empty string token being returned from the tokenizer.
+        if rawValue[index] == GraceKeyword.emptyStringKey.rawValue {
+            return ""
+        } else {
+            return rawValue[index]
+        }
     }
     
     /// Gets the boolean value at the given index.
