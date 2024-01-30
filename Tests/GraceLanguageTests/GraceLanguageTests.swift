@@ -48,7 +48,7 @@ final class GraceLanguageTests: XCTestCase {
         main {
             var n:int = -5;
         
-            return @testMe(-5);
+            return $n;
         }
         """
         
@@ -140,5 +140,65 @@ final class GraceLanguageTests: XCTestCase {
         let text = result?.string
         
         XCTAssert(text == "")
+    }
+    
+    func testComplex() throws {
+        let code = """
+        import StandardLib;
+        import StringLib;
+        
+        main {
+            var n:int = 1;
+            var dir:string = ' ';
+            var tumbler:int = 0;
+            var comboA:string = '';
+            var comboB:string = '';
+            var comboC:string = '';
+        
+            if ($dir = ' ') {
+                let $dir = 'L';
+            } else {
+                if ($dir != 'L') {
+                    increment $n;
+                    let $dir = 'L';
+                }
+            }
+            call @print($dir);
+        
+            if ($n > 3) {
+                let $n = 1;
+            }
+            call @print($n);
+        
+            decrement $tumbler;
+            if ($tumbler < 0) {
+                let $tumbler = 9;
+            }
+            call @print($tumbler);
+        
+            var value:string = @format("{0}{1}", [$tumbler, $dir]);
+            call @print($value);
+            switch $n {
+                case 1 {
+                    let $comboA = $value;
+                }
+                case 2 {
+                    let $comboB = $value;
+                }
+                case 3 {
+                    let $comboC = $value;
+                }
+            }
+        
+            var key:string = @format("{0} {1} {2}", [$comboA, $comboB, $comboC]);
+            call @print($key);
+            return $comboA;
+        }
+        """
+        
+        let result = try GraceRuntime.shared.run(program: code)
+        let text = result?.string
+        
+        XCTAssert(text == "9L")
     }
 }

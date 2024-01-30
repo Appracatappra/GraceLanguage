@@ -6,7 +6,7 @@ The Grace `MacroLib` defines a common library of `functions` that you might find
 
 The `MacroLib` defines common `functions` such as `if` and `randomString` that change the output of the given string. To use `MacroLib` in your Grace Program, use `import MacroLib;` at the start of your code. For example:
 
-```
+```swift
 import MacroLib;
 
 main {
@@ -20,7 +20,7 @@ This program loads the `MacroLib ` so it has access to the `randomString functio
 
 The `GraceRuntime.expandMacros` function can expand **Grace Function Macros** inside of a given string by executing the named function and inserting the result in the string. For example:
 
-```
+```swift
 let text = GraceRuntime.shared.expandMacros(in: "The answer is: @intMath(40,'+',2)")
 ```
 
@@ -36,7 +36,7 @@ The `MacroLib` defines the following `functions`:
 
 The `if` function evaluates the given `condition` and returns the given `isTrue` value if the result is `true`. If the result is `false` and the optional `isFalse` value is provided, it will be returned instead. It has the following calling structure:
 
-```
+```swift
 let text = GraceRuntime.shared.expandMacros(in: "The answer is: @if((2 > 4), `Greater Than`, `Less Than`)")
 ```
 
@@ -44,7 +44,7 @@ let text = GraceRuntime.shared.expandMacros(in: "The answer is: @if((2 > 4), `Gr
 
 The `randomString` function returns one of the passed in string array items at random. It has the following calling structure:
 
-```
+```swift
 let text = GraceRuntime.shared.expandMacros(in: "The answer is: @randomString(['one','two','three'])")
 ```
 
@@ -52,7 +52,7 @@ let text = GraceRuntime.shared.expandMacros(in: "The answer is: @randomString(['
 
 The `selectString` function returns one of the passed in string array items at based on the passed in index. It has the following calling structure:
 
-```
+```swift
 let text = GraceRuntime.shared.expandMacros(in: "The answer is: @selectString(2,['zero','one','two','three'])")
 ```
 
@@ -60,7 +60,7 @@ let text = GraceRuntime.shared.expandMacros(in: "The answer is: @selectString(2,
 
 The `intMath` function performs the given `operation` on two passed in `int` values. It has the following calling structure:
 
-```
+```swift
 let text = GraceRuntime.shared.expandMacros(in: "The answer is: @intMath(40,'+',2)")
 ```
 
@@ -75,7 +75,7 @@ The possible `operations` are:
 
 The `floatMath` function performs the given `operation` on two passed in `float` values. It has the following calling structure:
 
-```
+```swift
 let text = GraceRuntime.shared.expandMacros(in: "The answer is: @floatMath(2.5,'+',2.5)")
 ```
 
@@ -90,7 +90,7 @@ The possible `operations` are:
 
 The `formatFloat` function returns the given `float` value formatted with two decimal places and a comma as a thousands separator. It has the following calling structure:
 
-```
+```swift
 let text = GraceRuntime.shared.expandMacros(in: "The answer is: @formatFloat(5000)")
 ```
 
@@ -98,7 +98,7 @@ let text = GraceRuntime.shared.expandMacros(in: "The answer is: @formatFloat(500
 
 The `expandMacros` function returns the given `string` with any **Grace Function Macros** expanded. It has the following calling structure:
 
-```
+```swift
 import MacroLib;
 
 main {

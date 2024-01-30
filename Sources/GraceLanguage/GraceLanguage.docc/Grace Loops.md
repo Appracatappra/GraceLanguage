@@ -17,7 +17,7 @@ The following sections will go over each in detail.
 
 `Iterate` takes the form:
 
-```
+```swift
 iterate variable in array {
 	instruction;
 }
@@ -25,7 +25,7 @@ iterate variable in array {
 
 Where `variable` will be created and filled with the current item in the loop. For example:
 
-```
+```swift
 var words:string array = ["Hello", "World"];
 
 iterate word in $words {
@@ -39,7 +39,7 @@ The above will print all of the string in the array to the standard output.
 
 A `for` statement loops between a from and to number range and takes the form:
 
-```
+```swift
 for variable in value to value {
 	instruction;
 }
@@ -47,7 +47,7 @@ for variable in value to value {
 
 The variable will hold the current value for the loop. For example:
 
-```
+```swift
 var words:string array = ["Hello", "World"];
 
 for n in 0 to (@count($words) - 1) {
@@ -63,7 +63,7 @@ This is functionally equivalent to the `iterate` function above.
 
 A `while` statement will execute a list of instruction while a condition is met and takes the form:
 
-```
+```swift
 while (value operation value) {
 	instruction;
 }
@@ -72,7 +72,7 @@ while (value operation value) {
 For example:
 
 
-```
+```swift
 var n:int = 10;
 
 while ($n > 0) {
@@ -87,7 +87,7 @@ This code will print 10 to 1 backwards and then exit the loop.
 
 A `repeat-until` statement will execute a list of instructions until a condition is met and takes the form:
 
-```
+```swift
 repeat {
 	instruction;
 } (value operation value)

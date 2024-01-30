@@ -61,7 +61,7 @@ The following types of expressions are supported:
 
 For Grace Variables that hold `int` or `float` values, you can used the `increment` and `decrement` instructions to increment or decrement the given value by 1. For example:
 
-```
+```swift
 main {
 	var n:int = 10;
 	increment $n;
@@ -95,7 +95,7 @@ You can either append a new value to the end of an array, or insert it at a spec
 
 Using the same `colors` example above:
 
-```
+```swift
 add "olive" to $colors;
 ```
 
@@ -103,7 +103,7 @@ Would append "olive" to the end of the array.
 
 You can also insert an item at a specific index:
 
-```
+```swift
 add "pink" to $colors at index 1;
 ```
 
@@ -115,19 +115,19 @@ Use the `delete` keyword to remove an item from an array in the form:
 
 To remove "red" from our array, use: 
 
-```
+```swift
 delete index 0 from $colors;
 ```
 
 You can completely empty an array using the `empty` keyword, for example:
 
-```
+```swift
 empty $colors;
 ```
 
 If you import the `StandardLib` into your Grace Program, you can use the `@count` function to get the number of items in an array, for example:
 
-```
+```swift
 import StandardLib;
 ...
 
@@ -146,7 +146,7 @@ In the **Global Space** outside of `main` or a `function` use the following synt
 
 Take the following example:
 
-```
+```swift
 enumeration Colors {
     red,
     orange,
@@ -168,7 +168,7 @@ First you must create a variable that conforms to the `enumeration` type in the 
 
 Given our example above, look at the following code:
 
-```
+```swift
 main {
 	var background:enumeration Colors = #Colors~green;
 }
@@ -180,7 +180,7 @@ It creates a variable called `background` that conforms to the `Colors` `enumera
 
 Since the Grace Compiler knows which `enumeration` variable `background` belongs to, we could have used the shortcut syntax:
 
-```
+```swift
 main {
 	var background:enumeration Colors = green;
 }
@@ -194,7 +194,7 @@ Grace `structures` define a way to group related data together in one Grace Vari
 
 In the **Global Space** outside of `main` or a `function` use the following syntax to define an `structure`:
 
-```
+```swift
 structure name {
 	property name:type,
 	property name:type,
@@ -206,7 +206,7 @@ structure name {
 
 Take the following example:
 
-```
+```swift
 structure UserAccount {
     name:string,
     email:string,
@@ -224,7 +224,7 @@ First you must create a variable that conforms to the `structure` type in the fo
 
 Given our example above, look at the following code:
 
-```
+```swift
 main {
 	var user:structure UserAccount = new UserAccount(name:"Jane Doe", email:"jdoe@mac.com", phone:"713-555-1212");
 }
@@ -236,7 +236,7 @@ You can also do just one or more default value, for example `new UserAccount(nam
 
 To set or access `structure` properties, use code like the following:
 
-```
+```swift
 let $user~name = "John Doe";
 call @printf("User Name = {0}, email: {1}", [$user~name, $user~email]);
 ``` 

@@ -47,7 +47,7 @@ Additionally, library **Imports** and **Variables** can be defined in the **Glob
 
 Let's take a look at a simple Grace program to see how this works:
 
-```
+```swift
 import StandardLib;
 
 enumeration Colors {
@@ -132,7 +132,7 @@ Additionally, you can either create your own instance of the `GraceCompiler` or 
 
 The following is an example of precompiling a Grace Program:
 
-```
+```swift
 import GraceLanguage;
 
 var program:String {
@@ -158,7 +158,7 @@ The `GraceRuntime` can either execute a precompiled Grace Program or it can comp
 
 The following is an example of compiling and executing a program in one step:
 
-```
+```swift
 import GraceLanguage;
 
 var program:String {
@@ -178,7 +178,7 @@ do {
 
 Additionally, you can run a snippet of Grace Code without the required `main function` using:
 
-```
+```swift
 do {
 	try GraceRuntime.shared.run(script: "call @print('Hello World!');")
 } catch {
@@ -188,7 +188,7 @@ do {
 
 Using this function, the snippet of code will be wrapped in the following Grace code before compiling and executing:
 
-```
+```swift
 import StandardLib;
 import StringLib;
 import MacroLib;
@@ -202,7 +202,7 @@ main{
 
 All of the execution methods built into the `GraceCompiler` can return a result to the calling program. For example:
 
-```
+```swift
 let code = """
 import StandardLib;
     
@@ -224,7 +224,7 @@ Upon executing the above code `result` will be a `GraceVariable` containing `10`
 
 The `GraceRuntime.expandMacros` function can expand **Grace Function Macros** inside of a given string by executing the named function and inserting the result in the string. For example:
 
-```
+```swift
 let text = GraceRuntime.shared.expandMacros(in: "The answer is: @intMath(40,'+',2)")
 ```
 

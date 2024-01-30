@@ -977,6 +977,50 @@ open class GraceCompiler {
             return GraceVariable(name: "result", value: "\(result)", type: .float)
         }
         
+        // Add toString.
+        executable.register(name: "toString", parameterNames: ["value"], parameterTypes: [.any], returnType: .string) { parameters in
+            var result:String = ""
+            
+            if let value = parameters["value"] {
+                result = value.string
+            }
+            
+            return GraceVariable(name: "result", value: result, type: .string)
+        }
+        
+        // Add toBool.
+        executable.register(name: "toBool", parameterNames: ["value"], parameterTypes: [.any], returnType: .bool) { parameters in
+            var result:Bool = false;
+            
+            if let value = parameters["value"] {
+                result = value.bool
+            }
+            
+            return GraceVariable(name: "result", value: "\(result)", type: .bool)
+        }
+        
+        // Add toInt.
+        executable.register(name: "toInt", parameterNames: ["value"], parameterTypes: [.any], returnType: .int) { parameters in
+            var result:Int = 0;
+            
+            if let value = parameters["value"] {
+                result = value.int
+            }
+            
+            return GraceVariable(name: "result", value: "\(result)", type: .int)
+        }
+        
+        // Add toInt.
+        executable.register(name: "toFloat", parameterNames: ["value"], parameterTypes: [.any], returnType: .float) { parameters in
+            var result:Float = 0;
+            
+            if let value = parameters["value"] {
+                result = value.float
+            }
+            
+            return GraceVariable(name: "result", value: "\(result)", type: .float)
+        }
+        
         // Add array item count.
         executable.register(name: "count", parameterNames: ["array"], parameterTypes: [.any], returnType: .int) { parameters in
             var length:Int = 0

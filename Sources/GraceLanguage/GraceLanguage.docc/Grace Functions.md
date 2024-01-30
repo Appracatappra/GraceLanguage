@@ -19,7 +19,7 @@ As stated above, a Grace app must include a `main` "function" that acts as the *
 
 The `main` function is defined as follows:
 
-```
+```swift
 main {
 	instruction;
 	instruction;
@@ -29,7 +29,7 @@ main {
 
 For example:
 
-```
+```swift
 main {
 var colors:string array = ["Red", "Orange", "Yellow", "Green", "Blue", "Indigo", "Violet"];
 var background:enumeration Colors = #Colors~green;
@@ -43,7 +43,7 @@ var user:structure UserAccount = new UserAccount(name:"Jane Doe", email:"jdoe@ma
 
 All of the execution methods built into the `GraceCompiler` can return a result to the calling program. For example:
 
-```
+```swift
 let code = """
 import StandardLib;
     
@@ -71,7 +71,7 @@ Grace contains functions defined in the **Global Space** that support optional p
 
 Functions are defined in the form:
 
-```
+```swift
 function name([parameter:type, parameter:type, ...]) [returns type] {
 	instruction;
 	instruction;
@@ -81,7 +81,7 @@ function name([parameter:type, parameter:type, ...]) [returns type] {
 
 For example:
 
-```
+```swift
 function sayHello() {
 	call @print("Hello World");
 }
@@ -114,7 +114,7 @@ Function `hasColor` takes a two parameters `colors` & `color` and returns a `boo
 
 The following is an example of calling the defined `functions` above from `main`:
 
-```
+```swift
 main {
     var colors:string array = ["Red", "Orange", "Yellow", "Green", "Blue", "Indigo", "Violet"];
     
@@ -138,7 +138,7 @@ main {
 
 Grace `functions` can also be called inside of a formula. For example:
 
-```
+```swift
 main {
 	var n:int;
 	
@@ -153,7 +153,7 @@ function add(a:int, b:int) returns int {
 
 Grace `functions` fully support recursion such as the following example:
 
-```
+```swift
 function recurse(index:int) {
     var num:int = ($index + 1);
     
@@ -176,7 +176,7 @@ If you only want the functionality in a given Grace Program, register it with a 
 
 No matter where you `register` the `function` you'll use the same syntax:
 
-```
+```swift
 .register(name: function name, parameterNames:["parameter1", "parameter2"], parameterTypes[.type, .type], returnType: .type ) { parameters in
 
 }
@@ -184,7 +184,7 @@ No matter where you `register` the `function` you'll use the same syntax:
 
 Let's take a look at some examples from the `StandardLib`:
 
-```
+```swift
 // Add array item count.
 executable.register(name: "count", parameterNames: ["array"], parameterTypes: [.any], returnType: .int) { parameters in
     var length:Int = 0
@@ -218,7 +218,7 @@ A `parameters` dictionary is passed to the `register` closure containing entries
 
 If the function returns a value, it will be in a `GraceVariable` type. For functions that don't return a value, just return `nil`. For example:
 
-```
+```swift
 // Add print
 executable.register(name: "print", parameterNames: ["message"], parameterTypes: [.any]) { parameters in
     

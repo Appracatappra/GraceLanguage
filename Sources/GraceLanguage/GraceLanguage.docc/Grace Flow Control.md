@@ -6,7 +6,7 @@ Grace supports `if-then-else` and `switch-case-default` statements to control th
 
 If-then statements in a Grace Program are in the form:
 
-```
+```swift
 if (value operator value) {
 	instruction;
 	...
@@ -31,7 +31,7 @@ If the condition is met, all of the instructions are executed else all instructi
 
 To negate an operation, use the `not` statement. For example:
 
-```
+```swift
 if not $user.isRegistered {
 	let $user.isRegistered = true;
 }
@@ -42,7 +42,7 @@ if not $user.isRegistered {
 
 The `switch` statement allows you to compare a value against a list of possible options and take action if an option is met. It takes the form:
 
-```
+```swift
 switch variable {
 	case value {
 		instruction;
@@ -60,7 +60,7 @@ switch variable {
 
 Where `variable` is the variable that you are comparing and `case value` is the possible matching options. If the optional `default` statement is include, its instructions will be executed if the value doesn't match any other `case`. For Example:
 
-```
+```swift
 var first:bool = true;
 var flag:string = "off";
 ...
