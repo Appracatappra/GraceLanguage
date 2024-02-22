@@ -94,6 +94,21 @@ open class GraceTokenizer {
         }
     }
     
+    /// Returns the last code segment that was being processed.
+    /// - Returns: The code segment being processed.
+    public func lastCodeSegment() -> String {
+        var line:String = ""
+        let start:Int = queue.count - 10
+        
+        for n in start..<queue.count {
+            if (n < queue.count) && (n >= 0) {
+                line = line + " \(queue[n].value)"
+            }
+        }
+        
+        return line
+    }
+    
     /// Parses the given script command into an array of decomposed elements stored in the parse queue.
     /// - Parameter script: The script command string to parse.
     public func parse(_ script: String) throws {
@@ -223,7 +238,7 @@ open class GraceTokenizer {
                     key = ""
                     nestParenthesis -= 1
                     if nestParenthesis < 0 {
-                        throw GraceParseError.mismatchedParenthesis(message: "Parsing: \(key)", row: lineNumber, col: charPosition)
+                        throw GraceParseError.mismatchedParenthesis(message: "Parsing: \(lastCodeSegment())", row: lineNumber, col: charPosition)
                     }
                 case .inKeyword:
                     push(element: GraceToken(value: key, row: lineNumber, col: charPosition))
@@ -231,7 +246,7 @@ open class GraceTokenizer {
                     key = ""
                     nestParenthesis -= 1
                     if nestParenthesis < 0 {
-                        throw GraceParseError.mismatchedParenthesis(message: "Parsing: \(key)", row: lineNumber, col: charPosition)
+                        throw GraceParseError.mismatchedParenthesis(message: "Parsing: \(lastCodeSegment())", row: lineNumber, col: charPosition)
                     }
                     state = .seekKey
                 case .inComment:
@@ -263,7 +278,7 @@ open class GraceTokenizer {
                     key = ""
                     nestSquareBrackets -= 1
                     if nestSquareBrackets < 0 {
-                        throw GraceParseError.mismatchedSquareBracket(message: "Parsing: \(key)", row: lineNumber, col: charPosition)
+                        throw GraceParseError.mismatchedSquareBracket(message: "Parsing: \(lastCodeSegment())", row: lineNumber, col: charPosition)
                     }
                 case .inKeyword:
                     push(element: GraceToken(value: key, row: lineNumber, col: charPosition))
@@ -271,7 +286,7 @@ open class GraceTokenizer {
                     key = ""
                     nestSquareBrackets -= 1
                     if nestSquareBrackets < 0 {
-                        throw GraceParseError.mismatchedSquareBracket(message: "Parsing: \(key)", row: lineNumber, col: charPosition)
+                        throw GraceParseError.mismatchedSquareBracket(message: "Parsing: \(lastCodeSegment())", row: lineNumber, col: charPosition)
                     }
                     state = .seekKey
                 case .inComment:
@@ -303,7 +318,7 @@ open class GraceTokenizer {
                     key = ""
                     nestCurlyBrackets -= 1
                     if nestCurlyBrackets < 0 {
-                        throw GraceParseError.mismatchedCurlyBracket(message: "Parsing: \(key)", row: lineNumber, col: charPosition)
+                        throw GraceParseError.mismatchedCurlyBracket(message: "Parsing: \(lastCodeSegment())", row: lineNumber, col: charPosition)
                     }
                 case .inKeyword:
                     push(element: GraceToken(value: key, row: lineNumber, col: charPosition))
@@ -311,7 +326,7 @@ open class GraceTokenizer {
                     key = ""
                     nestCurlyBrackets -= 1
                     if nestCurlyBrackets < 0 {
-                        throw GraceParseError.mismatchedCurlyBracket(message: "Parsing: \(key)", row: lineNumber, col: charPosition)
+                        throw GraceParseError.mismatchedCurlyBracket(message: "Parsing: \(lastCodeSegment())", row: lineNumber, col: charPosition)
                     }
                     state = .seekKey
                 case .inComment:
@@ -433,20 +448,20 @@ open class GraceTokenizer {
         // Validate terminating state
         switch (state) {
         case .inSingleQuote:
-            throw GraceParseError.mismatchedSingleQuotes(message: "Parsing Section: \(value)", row: lineNumber, col: charPosition)
+            throw GraceParseError.mismatchedSingleQuotes(message: "Parsing Section: \(lastCodeSegment())", row: lineNumber, col: charPosition)
         case .inDoubleQuote:
-            throw GraceParseError.mismatchedDoubleQuotes(message: "Parsing Section: \(value)", row: lineNumber, col: charPosition)
+            throw GraceParseError.mismatchedDoubleQuotes(message: "Parsing Section: \(lastCodeSegment())", row: lineNumber, col: charPosition)
         default:
             if nestParenthesis > 0 {
-                throw GraceParseError.mismatchedParenthesis(message: "Parsing Section: \(key)", row: lineNumber, col: charPosition)
+                throw GraceParseError.mismatchedParenthesis(message: "Parsing Section: \(lastCodeSegment())", row: lineNumber, col: charPosition)
             }
             
             if nestSquareBrackets > 0 {
-                throw GraceParseError.mismatchedSquareBracket(message: "Parsing Section: \(key)", row: lineNumber, col: charPosition)
+                throw GraceParseError.mismatchedSquareBracket(message: "Parsing Section: \(lastCodeSegment())", row: lineNumber, col: charPosition)
             }
             
             if nestCurlyBrackets > 0 {
-                throw GraceParseError.mismatchedCurlyBracket(message: "Parsing Section: \(key)", row: lineNumber, col: charPosition)
+                throw GraceParseError.mismatchedCurlyBracket(message: "Parsing Section: \(lastCodeSegment())", row: lineNumber, col: charPosition)
             }
         }
         
