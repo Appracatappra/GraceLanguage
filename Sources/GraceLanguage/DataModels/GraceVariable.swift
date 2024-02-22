@@ -168,6 +168,48 @@ open class GraceVariable {
         }
     }
     
+    /// Returns `true` if the value being held is float data.
+    public var isFloat:Bool {
+        let value = rawValue[0]
+        return value.isFloat
+    }
+    
+    /// Returns `true` if the value being held is int data.
+    public var isInt:Bool {
+        let value = rawValue[0]
+        return value.isInt
+    }
+    
+    /// Returns `true` if the value being held is bool data.
+    public var isBool:Bool {
+        let value = rawValue[0]
+        return value.isBool
+    }
+    
+    /// Returns `true` if the value being held is null data.
+    public var isNull:Bool {
+        let value = rawValue[0]
+        return value.isNull
+    }
+    
+    /// Returns `true` if the value being held is void data.
+    public var isVoid:Bool {
+        let value = rawValue[0]
+        return value.isVoid
+    }
+    
+    /// Returns `true` if the value being held is string data.
+    public var isString:Bool {
+        let value = rawValue[0]
+        return value.isContiguousUTF8
+    }
+    
+    /// Returns `true` if the value being held is empty
+    public var isEmpty:Bool {
+        let value = rawValue[0]
+        return value.isEmpty
+    }
+    
     // MARK: - Initializers
     /// Creates a new instance.
     public init() {
@@ -298,6 +340,47 @@ open class GraceVariable {
         }
         
         return copy
+    }
+    
+    /// Atuomaticlaly select the variable type based on the data that it holds.
+    public func autoCastType() {
+        let value = rawValue[0]
+        
+        // Determine type from the data held in the value.
+        if value.isFloat {
+            type = .float
+        } else if value.isInt {
+            type = .int
+        } else if value.isBool {
+           type = .bool
+        } else if value.isNull {
+            type = .null
+        } else if value.isVoid {
+            type = .void
+        } else {
+            // Default to string.
+            type = .string
+        }
+    }
+    
+    /// Casts the variable to a float.
+    public func toFloat() {
+        type = .float
+    }
+    
+    /// Casts the variable to an int.
+    public func toInt() {
+        type = .int
+    }
+    
+    /// Casts the variable to a bool.
+    public func toBool() {
+        type = .bool
+    }
+    
+    /// Casts the variable to a  string.
+    public func toString() {
+        type = .string
     }
     
     /// Gets the string value at the given index.

@@ -63,6 +63,16 @@ open class GraceFormulaExpression:GraceExpression {
             throw GraceRuntimeError.formulaError(message: "Missing or invalid right operator.")
         }
         
+        // Auto convert type `.any` to allow calculations.
+        if leftValue.type == .any {
+            leftValue.autoCastType()
+        }
+        
+        // Auto convert type `.any` to allow calculations.
+        if rightValue.type == .any {
+            rightValue.autoCastType()
+        }
+        
         // Take action based on the left side type
         switch leftValue.type {
         case .string:
