@@ -33,6 +33,12 @@ public class GraceToken {
     /// The value of the token.
     public var value:String = ""
     
+    /// The line number the token was read from.
+    public var row:Int = 0
+    
+    /// The character position the token was read from.
+    public var col:Int = 0
+    
     // MARK: - Initializers
     /// Creates a new empty instance.
     init() {
@@ -43,14 +49,18 @@ public class GraceToken {
     /// - Parameters:
     ///   - type: The type of token.
     ///   - value: The value of the token.
-    init(type: tokenType, value: String) {
+    init(type: tokenType, value: String, row:Int, col:Int) {
         self.type = type
         self.value = value
+        self.row = row
+        self.col = col
     }
     
     /// Creates a new instance.
     /// - Parameter value: The value for the token.
-    init(value:String) {
+    init(value:String, row:Int, col:Int) {
         self.value = value
+        self.row = row
+        self.col = col
     }
 }

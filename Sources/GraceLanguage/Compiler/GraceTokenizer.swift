@@ -104,6 +104,8 @@ open class GraceTokenizer {
         var nestParenthesis = 0
         var nestSquareBrackets = 0
         var nestCurlyBrackets = 0
+        var lineNumber:Int = 1
+        var charPosition:Int = 0
         
         // Empty current queue
         queue = []
@@ -111,6 +113,7 @@ open class GraceTokenizer {
         // Process all characters in the script command
         for c in script {
             let char = String(c)
+            charPosition += 1
             
             // Take action based on character and state.
             switch(char) {
@@ -119,7 +122,7 @@ open class GraceTokenizer {
                 case .seekKey:
                     break
                 case .inKeyword:
-                    push(element: GraceToken(value: key))
+                    push(element: GraceToken(value: key, row: lineNumber, col: charPosition))
                     state = .seekKey
                     key = ""
                 case .inComment:
@@ -132,7 +135,7 @@ open class GraceTokenizer {
                 case .seekKey:
                     break
                 case .inKeyword:
-                    push(element: GraceToken(value: key))
+                    push(element: GraceToken(value: key, row: lineNumber, col: charPosition))
                     state = .seekKey
                     key = ""
                 case .inComment:
@@ -142,6 +145,8 @@ open class GraceTokenizer {
                 default:
                     value += char
                 }
+                lineNumber += 1
+                charPosition = 0
             case "'":
                 switch(state) {
                 case .seekKey:
@@ -150,7 +155,7 @@ open class GraceTokenizer {
                     if lastChar == "'" {
                         // Empty string?
                         if value.isEmpty {
-                            push(element: GraceToken(type: .singleQuotedString, value: "EMPTY_STRING"))
+                            push(element: GraceToken(type: .singleQuotedString, value: "EMPTY_STRING", row: lineNumber, col: charPosition))
                             value = ""
                             state = .seekKey
                         } else {
@@ -159,7 +164,7 @@ open class GraceTokenizer {
                             lastChar = ""
                         }
                     } else {
-                        push(element: GraceToken(type: .singleQuotedString, value: value))
+                        push(element: GraceToken(type: .singleQuotedString, value: value, row: lineNumber, col: charPosition))
                         value = ""
                         state = .seekKey
                     }
@@ -176,7 +181,7 @@ open class GraceTokenizer {
                     if lastChar == "\"" {
                         // Empty string?
                         if value.isEmpty {
-                            push(element: GraceToken(type: .doubleQuotedString, value: "EMPTY_STRING"))
+                            push(element: GraceToken(type: .doubleQuotedString, value: "EMPTY_STRING", row: lineNumber, col: charPosition))
                             value = ""
                             state = .seekKey
                         } else {
@@ -185,7 +190,7 @@ open class GraceTokenizer {
                             lastChar = ""
                         }
                     } else {
-                        push(element: GraceToken(type: .doubleQuotedString, value: value))
+                        push(element: GraceToken(type: .doubleQuotedString, value: value, row: lineNumber, col: charPosition))
                         value = ""
                         state = .seekKey
                     }
@@ -197,12 +202,12 @@ open class GraceTokenizer {
             case "(":
                 switch(state) {
                 case .seekKey:
-                    push(element: GraceToken(value: char))
+                    push(element: GraceToken(value: char, row: lineNumber, col: charPosition))
                     key = ""
                     nestParenthesis += 1
                 case .inKeyword:
-                    push(element: GraceToken(value: key))
-                    push(element: GraceToken(value: char))
+                    push(element: GraceToken(value: key, row: lineNumber, col: charPosition))
+                    push(element: GraceToken(value: char, row: lineNumber, col: charPosition))
                     key = ""
                     nestParenthesis += 1
                     state = .seekKey
@@ -214,19 +219,19 @@ open class GraceTokenizer {
             case ")":
                 switch(state) {
                 case .seekKey:
-                    push(element: GraceToken(value: char))
+                    push(element: GraceToken(value: char, row: lineNumber, col: charPosition))
                     key = ""
                     nestParenthesis -= 1
                     if nestParenthesis < 0 {
-                        throw GraceParseError.mismatchedParenthesis(message: "Parsing: \(key)")
+                        throw GraceParseError.mismatchedParenthesis(message: "Parsing: \(key)", row: lineNumber, col: charPosition)
                     }
                 case .inKeyword:
-                    push(element: GraceToken(value: key))
-                    push(element: GraceToken(value: char))
+                    push(element: GraceToken(value: key, row: lineNumber, col: charPosition))
+                    push(element: GraceToken(value: char, row: lineNumber, col: charPosition))
                     key = ""
                     nestParenthesis -= 1
                     if nestParenthesis < 0 {
-                        throw GraceParseError.mismatchedParenthesis(message: "Parsing: \(key)")
+                        throw GraceParseError.mismatchedParenthesis(message: "Parsing: \(key)", row: lineNumber, col: charPosition)
                     }
                     state = .seekKey
                 case .inComment:
@@ -237,12 +242,12 @@ open class GraceTokenizer {
             case "[":
                 switch(state) {
                 case .seekKey:
-                    push(element: GraceToken(value: char))
+                    push(element: GraceToken(value: char, row: lineNumber, col: charPosition))
                     key = ""
                     nestSquareBrackets += 1
                 case .inKeyword:
-                    push(element: GraceToken(value: key))
-                    push(element: GraceToken(value: char))
+                    push(element: GraceToken(value: key, row: lineNumber, col: charPosition))
+                    push(element: GraceToken(value: char, row: lineNumber, col: charPosition))
                     key = ""
                     nestSquareBrackets += 1
                     state = .seekKey
@@ -254,19 +259,19 @@ open class GraceTokenizer {
             case "]":
                 switch(state) {
                 case .seekKey:
-                    push(element: GraceToken(value: char))
+                    push(element: GraceToken(value: char, row: lineNumber, col: charPosition))
                     key = ""
                     nestSquareBrackets -= 1
                     if nestSquareBrackets < 0 {
-                        throw GraceParseError.mismatchedSquareBracket(message: "Parsing: \(key)")
+                        throw GraceParseError.mismatchedSquareBracket(message: "Parsing: \(key)", row: lineNumber, col: charPosition)
                     }
                 case .inKeyword:
-                    push(element: GraceToken(value: key))
-                    push(element: GraceToken(value: char))
+                    push(element: GraceToken(value: key, row: lineNumber, col: charPosition))
+                    push(element: GraceToken(value: char, row: lineNumber, col: charPosition))
                     key = ""
                     nestSquareBrackets -= 1
                     if nestSquareBrackets < 0 {
-                        throw GraceParseError.mismatchedSquareBracket(message: "Parsing: \(key)")
+                        throw GraceParseError.mismatchedSquareBracket(message: "Parsing: \(key)", row: lineNumber, col: charPosition)
                     }
                     state = .seekKey
                 case .inComment:
@@ -277,12 +282,12 @@ open class GraceTokenizer {
             case "{":
                 switch(state) {
                 case .seekKey:
-                    push(element: GraceToken(value: char))
+                    push(element: GraceToken(value: char, row: lineNumber, col: charPosition))
                     key = ""
                     nestCurlyBrackets += 1
                 case .inKeyword:
-                    push(element: GraceToken(value: key))
-                    push(element: GraceToken(value: char))
+                    push(element: GraceToken(value: key, row: lineNumber, col: charPosition))
+                    push(element: GraceToken(value: char, row: lineNumber, col: charPosition))
                     key = ""
                     nestCurlyBrackets += 1
                     state = .seekKey
@@ -294,19 +299,19 @@ open class GraceTokenizer {
             case "}":
                 switch(state) {
                 case .seekKey:
-                    push(element: GraceToken(value: char))
+                    push(element: GraceToken(value: char, row: lineNumber, col: charPosition))
                     key = ""
                     nestCurlyBrackets -= 1
                     if nestCurlyBrackets < 0 {
-                        throw GraceParseError.mismatchedCurlyBracket(message: "Parsing: \(key)")
+                        throw GraceParseError.mismatchedCurlyBracket(message: "Parsing: \(key)", row: lineNumber, col: charPosition)
                     }
                 case .inKeyword:
-                    push(element: GraceToken(value: key))
-                    push(element: GraceToken(value: char))
+                    push(element: GraceToken(value: key, row: lineNumber, col: charPosition))
+                    push(element: GraceToken(value: char, row: lineNumber, col: charPosition))
                     key = ""
                     nestCurlyBrackets -= 1
                     if nestCurlyBrackets < 0 {
-                        throw GraceParseError.mismatchedCurlyBracket(message: "Parsing: \(key)")
+                        throw GraceParseError.mismatchedCurlyBracket(message: "Parsing: \(key)", row: lineNumber, col: charPosition)
                     }
                     state = .seekKey
                 case .inComment:
@@ -317,11 +322,11 @@ open class GraceTokenizer {
             case "*":
                 switch(state){
                 case .seekKey:
-                    push(element: GraceToken(value: char))
+                    push(element: GraceToken(value: char, row: lineNumber, col: charPosition))
                     key = ""
                 case .inKeyword:
                     key += char
-                    push(element: GraceToken(value: key))
+                    push(element: GraceToken(value: key, row: lineNumber, col: charPosition))
                     key = ""
                     state = .seekKey
                 case .inComment:
@@ -332,11 +337,11 @@ open class GraceTokenizer {
             case ",", "+", "-", "!", ";", "<", ">", ":", "~", "@", "$", "#":
                 switch(state){
                 case .seekKey:
-                    push(element: GraceToken(value: char))
+                    push(element: GraceToken(value: char, row: lineNumber, col: charPosition))
                     key = ""
                 case .inKeyword:
-                    push(element: GraceToken(value: key))
-                    push(element: GraceToken(value: char))
+                    push(element: GraceToken(value: key, row: lineNumber, col: charPosition))
+                    push(element: GraceToken(value: char, row: lineNumber, col: charPosition))
                     key = ""
                     state = .seekKey
                 case .inComment:
@@ -348,31 +353,31 @@ open class GraceTokenizer {
                 switch(state){
                 case .seekKey:
                     if lastChar == "!" {
-                        replaceLastElement(withElement: GraceToken(value: "!="))
+                        replaceLastElement(withElement: GraceToken(value: "!=", row: lineNumber, col: charPosition))
                         lastChar = ""
                     } else if lastChar == "<" {
-                        replaceLastElement(withElement: GraceToken(value: "<="))
+                        replaceLastElement(withElement: GraceToken(value: "<=", row: lineNumber, col: charPosition))
                         lastChar = ""
                     } else if lastChar == ">" {
-                        replaceLastElement(withElement: GraceToken(value: ">="))
+                        replaceLastElement(withElement: GraceToken(value: ">=", row: lineNumber, col: charPosition))
                         lastChar = ""
                     } else {
-                        push(element: GraceToken(value: char))
+                        push(element: GraceToken(value: char, row: lineNumber, col: charPosition))
                     }
                     key = ""
                 case .inKeyword:
                     if lastChar == "!" {
-                        replaceLastElement(withElement: GraceToken(value: "!="))
+                        replaceLastElement(withElement: GraceToken(value: "!=", row: lineNumber, col: charPosition))
                         lastChar = ""
                     } else if lastChar == "<" {
-                        replaceLastElement(withElement: GraceToken(value: "<="))
+                        replaceLastElement(withElement: GraceToken(value: "<=", row: lineNumber, col: charPosition))
                         lastChar = ""
                     } else if lastChar == ">" {
-                        replaceLastElement(withElement: GraceToken(value: ">="))
+                        replaceLastElement(withElement: GraceToken(value: ">=", row: lineNumber, col: charPosition))
                         lastChar = ""
                     } else {
-                        push(element: GraceToken(value: key))
-                        push(element: GraceToken(value: char))
+                        push(element: GraceToken(value: key, row: lineNumber, col: charPosition))
+                        push(element: GraceToken(value: char, row: lineNumber, col: charPosition))
                     }
                     key = ""
                     state = .seekKey
@@ -389,7 +394,7 @@ open class GraceTokenizer {
                         removeLastElement()
                         lastChar = ""
                     } else {
-                        push(element: GraceToken(value: char))
+                        push(element: GraceToken(value: char, row: lineNumber, col: charPosition))
                     }
                     key = ""
                 case .inKeyword:
@@ -398,8 +403,8 @@ open class GraceTokenizer {
                         removeLastElement()
                         lastChar = ""
                     } else {
-                        push(element: GraceToken(value: key))
-                        push(element: GraceToken(value: char))
+                        push(element: GraceToken(value: key, row: lineNumber, col: charPosition))
+                        push(element: GraceToken(value: char, row: lineNumber, col: charPosition))
                     }
                     key = ""
                     state = .seekKey
@@ -428,30 +433,30 @@ open class GraceTokenizer {
         // Validate terminating state
         switch (state) {
         case .inSingleQuote:
-            throw GraceParseError.mismatchedSingleQuotes(message: "Parsing Section: \(value)")
+            throw GraceParseError.mismatchedSingleQuotes(message: "Parsing Section: \(value)", row: lineNumber, col: charPosition)
         case .inDoubleQuote:
-            throw GraceParseError.mismatchedDoubleQuotes(message: "Parsing Section: \(value)")
+            throw GraceParseError.mismatchedDoubleQuotes(message: "Parsing Section: \(value)", row: lineNumber, col: charPosition)
         default:
             if nestParenthesis > 0 {
-                throw GraceParseError.mismatchedParenthesis(message: "Parsing Section: \(key)")
+                throw GraceParseError.mismatchedParenthesis(message: "Parsing Section: \(key)", row: lineNumber, col: charPosition)
             }
             
             if nestSquareBrackets > 0 {
-                throw GraceParseError.mismatchedSquareBracket(message: "Parsing Section: \(key)")
+                throw GraceParseError.mismatchedSquareBracket(message: "Parsing Section: \(key)", row: lineNumber, col: charPosition)
             }
             
             if nestCurlyBrackets > 0 {
-                throw GraceParseError.mismatchedCurlyBracket(message: "Parsing Section: \(key)")
+                throw GraceParseError.mismatchedCurlyBracket(message: "Parsing Section: \(key)", row: lineNumber, col: charPosition)
             }
         }
         
         // Handle any trailing values
         if !key.isEmpty {
-            push(element: GraceToken(value: key))
+            push(element: GraceToken(value: key, row: lineNumber, col: charPosition))
         }
         
         if !value.isEmpty {
-            push(element: GraceToken(value: value))
+            push(element: GraceToken(value: value, row: lineNumber, col: charPosition))
         }
     }
 }

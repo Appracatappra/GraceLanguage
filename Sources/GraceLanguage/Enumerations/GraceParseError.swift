@@ -20,19 +20,19 @@ public enum GraceParseError: Error {
     case invalidKeyword(message: String)
     
     /// The parser encountered a value in single quotes that is not properly terminated. `message` contains the details of the given failure.
-    case mismatchedSingleQuotes(message: String)
+    case mismatchedSingleQuotes(message: String, row: Int, col: Int)
     
     /// The parser encountered a value in double quotes that is not properly terminated. `message` contains the details of the given failure.
-    case mismatchedDoubleQuotes(message: String)
+    case mismatchedDoubleQuotes(message: String, row: Int, col: Int)
     
     /// The parser encountered a value in parenthesis that is not properly terminated. `message` contains the details of the given failure.
-    case mismatchedParenthesis(message: String)
+    case mismatchedParenthesis(message: String, row: Int, col: Int)
     
     /// The parser encountered a value in square brackets that is not properly terminated. `message` contains the details of the given failure.
-    case mismatchedSquareBracket(message: String)
+    case mismatchedSquareBracket(message: String, row: Int, col: Int)
     
     /// The parser encountered a value in curly brackets that is not properly terminated. `message` contains the details of the given failure.
-    case mismatchedCurlyBracket(message: String)
+    case mismatchedCurlyBracket(message: String, row: Int, col: Int)
     
     /// The parser encountered a value that it was not expecting. `message` contains the details of the given failure.
     case malformedGraceCommand(message: String)

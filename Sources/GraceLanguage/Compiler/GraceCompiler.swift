@@ -85,11 +85,13 @@ open class GraceCompiler {
         while tokenizer.count > 0 {
             
             // Get next keyword
+            let token = tokenizer.lookAhead()
             let keyword = try getNextKeyword(from: tokenizer)
             
             switch keyword {
             case .importKey:
-                let library = tokenizer.pop().value
+                let token = tokenizer.pop()
+                let library = token.value
                 
                 switch library {
                 case "StandardLib":
@@ -99,7 +101,7 @@ open class GraceCompiler {
                 case "MacroLib":
                     ImportMacroLibrary(to: executable)
                 default:
-                    throw GraceCompilerError.unknownLibrary(message: "Unknown library '\(library)' in Import call.")
+                    throw GraceCompilerError.unknownLibrary(message: "Unknown library '\(library)' in Import call.", row: token.row, col: token.col)
                 }
                 
                 try ensureNextElementMatches(tokenizer: tokenizer, keyword: .semicolon)
@@ -158,7 +160,7 @@ open class GraceCompiler {
                 popFunction()
             default:
                 // Invalid keyword
-                throw GraceCompilerError.invalidKeyword(message: "Unexpected keyword `\(keyword)` found.")
+                throw GraceCompilerError.invalidKeyword(message: "Unexpected keyword `\(keyword)` found.", row: token.row, col: token.col)
             }
         }
         
@@ -182,6 +184,7 @@ open class GraceCompiler {
         while tokenizer.count > 0 {
             
             // Get next keyword
+            let token = tokenizer.lookAhead()
             let keyword = try getNextKeyword(from: tokenizer)
             switch keyword {
             case .varKey:
@@ -325,7 +328,7 @@ open class GraceCompiler {
                 return instructions
             default:
                 // Invalid keyword
-                throw GraceCompilerError.invalidKeyword(message: "Unexpected keyword `\(keyword)` found.")
+                throw GraceCompilerError.invalidKeyword(message: "Unexpected keyword `\(keyword)` found.", row: token.row, col: token.col)
             }
         }
         
@@ -345,6 +348,7 @@ open class GraceCompiler {
         // Interpret parse queue
         while tokenizer.count > 0 {
             // Get next keyword
+            let token = tokenizer.lookAhead()
             let keyword = try getNextKeyword(from: tokenizer)
             switch keyword {
             case .caseKey:
@@ -364,7 +368,7 @@ open class GraceCompiler {
                 return
             default:
                 // Invalid keyword
-                throw GraceCompilerError.invalidKeyword(message: "Unexpected keyword `\(keyword)` found.")
+                throw GraceCompilerError.invalidKeyword(message: "Unexpected keyword `\(keyword)` found.", row: token.row, col: token.col)
             }
         }
     }
@@ -401,6 +405,7 @@ open class GraceCompiler {
         
         instruction.variableName = tokenizer.pop().value
         
+        let token = tokenizer.lookAhead()
         let keyword = try getNextKeyword(from: tokenizer)
         switch keyword {
         case .atKey:
@@ -411,7 +416,7 @@ open class GraceCompiler {
             break
         default:
             // Invalid keyword
-            throw GraceCompilerError.invalidKeyword(message: "Unexpected keyword `\(keyword)` found.")
+            throw GraceCompilerError.invalidKeyword(message: "Unexpected keyword `\(keyword)` found.", row: token.row, col: token.col)
         }
     }
     
@@ -453,6 +458,7 @@ open class GraceCompiler {
         try ensureNextElementMatches(tokenizer: tokenizer, keyword: .colon)
         
         // Get type.
+        var token = tokenizer.lookAhead()
         keyword = try getNextKeyword(from: tokenizer)
         switch keyword {
         case .anyKey:
@@ -473,7 +479,7 @@ open class GraceCompiler {
             variable.subtypeName = tokenizer.pop().value
         default:
             // Invalid keyword
-            throw GraceCompilerError.invalidKeyword(message: "Unexpected keyword `\(keyword)` found in variable '\(variable.name)' definition.")
+            throw GraceCompilerError.invalidKeyword(message: "Unexpected keyword `\(keyword)` found in variable '\(variable.name)' definition.", row: token.row, col: token.col)
         }
         
         // Is an array definition?
@@ -484,6 +490,7 @@ open class GraceCompiler {
         }
         
         // Get type
+        token = tokenizer.lookAhead()
         keyword = try getNextKeyword(from: tokenizer)
         switch keyword {
         case .semicolon:
@@ -492,7 +499,7 @@ open class GraceCompiler {
             break
         default:
             // Invalid keyword
-            throw GraceCompilerError.invalidKeyword(message: "Unexpected keyword `\(keyword)` found in variable '\(variable.name)' definition.")
+            throw GraceCompilerError.invalidKeyword(message: "Unexpected keyword `\(keyword)` found in variable '\(variable.name)' definition.", row: token.row, col: token.col)
         }
         
         // Add initialization
@@ -736,6 +743,7 @@ open class GraceCompiler {
         
         // Interpret parse queue
         while tokenizer.count > 0 {
+            let token = tokenizer.lookAhead()
             let keyword = try getNextKeyword(from: tokenizer, allowsUnknown: true)
             switch keyword {
             case .comma:
@@ -746,7 +754,7 @@ open class GraceCompiler {
                 return items
             default:
                 // Invalid keyword
-                throw GraceCompilerError.invalidKeyword(message: "Unexpected keyword `\(keyword)` found in enumeration definition.")
+                throw GraceCompilerError.invalidKeyword(message: "Unexpected keyword `\(keyword)` found in enumeration definition.", row: token.row, col: token.col)
             }
         }
         
@@ -762,6 +770,7 @@ open class GraceCompiler {
     private func compileVarType(tokenizer:GraceTokenizer, executable:GraceExecutable, forFunction:Bool = true) throws -> GraceVariable.VariableType {
         var type:GraceVariable.VariableType = .any
         
+        let token = tokenizer.lookAhead()
         let keyword = try getNextKeyword(from: tokenizer)
         switch keyword {
         case .anyKey:
@@ -780,11 +789,11 @@ open class GraceCompiler {
             if forFunction {
                 type = .structure
             } else {
-                throw GraceCompilerError.invalidParameterType(message: "Parameter/Property type Structure not valid for the current construct.")
+                throw GraceCompilerError.invalidParameterType(message: "Parameter/Property type Structure not valid for the current construct.", row: token.row, col: token.col)
             }
         default:
             // Invalid keyword
-            throw GraceCompilerError.invalidKeyword(message: "Unexpected keyword `\(keyword)` found in variable definition.")
+            throw GraceCompilerError.invalidKeyword(message: "Unexpected keyword `\(keyword)` found in variable definition.", row: token.row, col: token.col)
         }
         
         return type
@@ -882,7 +891,7 @@ open class GraceCompiler {
                 return .unknown
             } else {
                 // Invalid keyword
-                throw GraceCompilerError.invalidKeyword(message: "Invalid keyword `\(element.value)` found.")
+                throw GraceCompilerError.invalidKeyword(message: "Invalid keyword `\(element.value)` found.", row: element.row, col: element.col)
             }
         }
     }
@@ -893,9 +902,10 @@ open class GraceCompiler {
     ///   - keyword: The keyword to match.
     private func ensureNextElementMatches(tokenizer:GraceTokenizer, keyword: GraceKeyword) throws {
         
+        let token = tokenizer.lookAhead()
         let nextKeyword = try getNextKeyword(from: tokenizer)
         if keyword != nextKeyword {
-            throw GraceCompilerError.invalidKeyword(message: "Expected `\(keyword.rawValue)` but found `\(nextKeyword.rawValue)`")
+            throw GraceCompilerError.invalidKeyword(message: "Expected `\(keyword.rawValue)` but found `\(nextKeyword.rawValue)`", row: token.row, col: token.col)
         }
     }
     

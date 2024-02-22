@@ -11,7 +11,7 @@ import SwiftletUtilities
 /// Defines the errors that can be thrown when compiling a Grace program.
 public enum GraceCompilerError: Error {
     /// The given keyword was invalid. `message` contains the details of the given failure.
-    case invalidKeyword(message:String)
+    case invalidKeyword(message:String, row:Int, col:Int)
     
     /// The Grace program was not nested correctly. `message` contains the details of the given failure.
     case nestingError(message:String)
@@ -23,8 +23,8 @@ public enum GraceCompilerError: Error {
     case malformedInstruction(message:String)
     
     /// An unknown library was calling in an import. `message` contains the details of the given failure.
-    case unknownLibrary(message:String)
+    case unknownLibrary(message:String, row:Int, col:Int)
     
     /// The parameter type is invalid. `message` contains the details of the given failure.
-    case invalidParameterType(message:String)
+    case invalidParameterType(message:String, row:Int, col:Int)
 }
