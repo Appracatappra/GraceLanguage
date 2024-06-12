@@ -14,7 +14,7 @@ open class GraceContainer {
     /// Defines a `GraceStructure`.
     public typealias GraceStructure = [String:GraceVariable]
     
-    // MARK: - Static Properties
+    // MARK: - Static Functions
     /// Compresses a `GraceStructure` instance for storage in a `GraceVariable`.
     /// - Parameter structure: The structure to compress.
     /// - Returns: The compressed version of the `GraceStructure`.

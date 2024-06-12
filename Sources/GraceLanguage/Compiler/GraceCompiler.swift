@@ -14,7 +14,7 @@ open class GraceCompiler {
     
     // MARK: Static Properties
     /// A shared instance of the `GraceCompiler`
-    public static var shared:GraceCompiler = GraceCompiler()
+    public nonisolated(unsafe) static let shared:GraceCompiler = GraceCompiler()
     
     // MARK: - Properties
     /// A list of external `GraceFunctions` registered with the `GraceCompiler`.

@@ -32,7 +32,7 @@ open class GraceTokenizer {
     
     // MARK: Static Properties
     /// A common, shared instance of the `ADscriptParseQueue` used across object instances.
-    public static var shared = GraceTokenizer()
+    public nonisolated(unsafe) static let shared = GraceTokenizer()
     
     // MARK: - Properties
     /// An array of the decomposed parts of the script string

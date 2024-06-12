@@ -13,7 +13,7 @@ open class GraceRuntime {
     
     // MARK: - Static Properties
     /// A common shared instance of the Grace Runtime.
-    public static var shared:GraceRuntime = GraceRuntime()
+    public nonisolated(unsafe) static let shared:GraceRuntime = GraceRuntime()
     
     // MARK: - Static Functions
     /// Gets a `GraceVariable` from the given `GraceInstruction`.
