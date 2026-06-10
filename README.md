@@ -1,6 +1,6 @@
 # GraceLanguage
 
-![](https://img.shields.io/badge/license-MIT-green) ![](https://img.shields.io/badge/maintained%3F-Yes-green) ![](https://img.shields.io/badge/swift-6.0-green) ![](https://img.shields.io/badge/iOS-18.0-red) ![](https://img.shields.io/badge/macOS-15.0-red) ![](https://img.shields.io/badge/tvOS-18.0-red) ![](https://img.shields.io/badge/watchOS-11.0-red) ![](https://img.shields.io/badge/dependency-LogManager-orange) ![](https://img.shields.io/badge/dependency-SimpleSerializer-orange) ![](https://img.shields.io/badge/dependency-SwiftletUtilities-orange)
+![](https://img.shields.io/badge/license-MIT-green) ![](https://img.shields.io/badge/maintained%3F-Yes-green) ![](https://img.shields.io/badge/swift-6.4-green) ![](https://img.shields.io/badge/iOS-26.0-red) ![](https://img.shields.io/badge/macOS-26.0-red) ![](https://img.shields.io/badge/tvOS-26.0-red) ![](https://img.shields.io/badge/watchOS-26.0-red) ![](https://img.shields.io/badge/dependency-LogManager-orange) ![](https://img.shields.io/badge/dependency-SimpleSerializer-orange) ![](https://img.shields.io/badge/dependency-SwiftletUtilities-orange)
 
 `GraceLanguage` provides a Turning-Complete scripting language can be used in applications such as spreadsheet calculations, database manipulations or game engines. 
 
