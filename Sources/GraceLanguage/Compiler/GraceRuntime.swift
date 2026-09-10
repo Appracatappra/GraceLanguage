@@ -129,6 +129,19 @@ open class GraceRuntime {
         return try run(program: program)
     }
     
+    /// Compile the given snippit of Grace Program code and runs it agains the given executable.
+    /// - Parameters:
+    ///   - script: The text of the snipit that does not contain a `main` definition. This code will automatically be wrapped in a generated `main`definition.
+    ///   - executable: The Grace Executable to run the snippit against.
+    /// - Returns: Returns the results of the execution as a `GraceVariable` or `nil` if nothing is returned.
+    @discardableResult public func run(script:String, against executable:GraceExecutable) throws -> GraceVariable? {
+        let program:String = "main{\(script);}"
+        
+        let exe = try GraceCompiler.shared.compileSegment(executable: executable, programSegment: program)
+        
+        return try run(executable: exe)
+    }
+    
     /// Complies and runs a snipit of Grace Program code and returns the result of the execution.
     /// - Parameter script: The text of the snipit that does not contain a `main` or `return` definition. This code will automatically be wrapped in a generated `main` and `return`.
     /// - Returns: Returns the results of the execution as a `GraceVariable` or `nil` if nothing is returned.
@@ -136,6 +149,19 @@ open class GraceRuntime {
         let program:String = "import StandardLib; import StringLib; import MacroLib; main{return \(script);}"
         
         return try run(program: program)
+    }
+    
+    /// Complies and runs a snipit of Grace Program code against the given executable and returns the result.
+    /// - Parameters:
+    ///   - script: The text of the snipit that does not contain a `main` or `return` definition. This code will automatically be wrapped in a generated `main` and `return`.
+    ///   - executable: The Grace Executable to run the snippit against.
+    /// - Returns: Returns the results of the execution as a `GraceVariable` or `nil` if nothing is returned.
+    @discardableResult public func evaluate(script:String, against executable:GraceExecutable) throws -> GraceVariable? {
+        let program:String = "main{return \(script);}"
+        
+        let exe = try GraceCompiler.shared.compileSegment(executable: executable, programSegment: program)
+        
+        return try run(executable: exe)
     }
     
     /// Expands any macros written as Grace Function Calls in the given string and inserts the result of executing the function into the output string.
@@ -146,7 +172,7 @@ open class GraceRuntime {
     /// ```
     ///
     /// - Parameter text: The text containing possible Grace Function Calls macros.
-    /// - Returns: The text will all macros expanded or the input text if the string contained no marcos.
+    /// - Returns: The text with all macros expanded or the input text if the string contained no marcos.
     public func expandMacros(in text:String) throws -> String {
         var result:String = ""
         var lastCharacter:String = ""
@@ -211,6 +237,91 @@ open class GraceRuntime {
         if function != "" {
             // Execute the Grace function and write the results to the string.
             if let output = try evaluate(script: function) {
+                result += output.string
+            } else {
+                result += function
+            }
+        }
+        
+        return result
+    }
+    
+    /// Expands any macros written as Grace Function Calls against the given executable. in the given string and inserts the result of executing the function into the output string.
+    ///
+    /// For Example:
+    /// ```
+    /// let executable = try GraceCompiler.shared.compile(program: someProgram)
+    /// let text = GraceRuntime.shared.expandMacros(in: "The answer is: @intMath(40,'+',2)", against: executable)
+    /// ```
+    ///
+    /// - Parameters:
+    ///   - text: The text containing possible Grace Function Calls macros.
+    ///   - executable: The Grace Executable to run the expansion against.
+    /// - Returns: The text with all macros expanded or the input text if the string contained no marcos.
+    public func expandMacros(in text:String, against executable:GraceExecutable) throws -> String {
+        var result:String = ""
+        var lastCharacter:String = ""
+        var inFunction:Bool = false
+        var nestLevel:Int = 0
+        var function:String = ""
+        
+        // Ensure there is a potential of a Grace Function call.
+        guard text.contains("@") else {
+            return text
+        }
+        
+        // Process all characters to expand any possible Grace function calls.
+        for char in text {
+            let character = "\(char)"
+            
+            if inFunction {
+                switch character {
+                case "@":
+                    if lastCharacter == "@" {
+                        result += character
+                        function = ""
+                        inFunction = false
+                    } else {
+                        function += character
+                    }
+                case "(":
+                    nestLevel += 1
+                    function += character
+                case ")":
+                    nestLevel -= 1
+                    function += character
+                    
+                    if nestLevel == 0 {
+                        // Execute the Grace function and write the results to the string.
+                        if let output = try evaluate(script: function, against: executable) {
+                            result += output.string
+                        } else {
+                            result += function
+                        }
+                        
+                        function = ""
+                        inFunction = false
+                    }
+                default:
+                    function += character
+                }
+            } else {
+                switch character {
+                case "@":
+                    inFunction = true
+                    function += character
+                default:
+                    result += character
+                }
+            }
+            
+            lastCharacter = character
+        }
+        
+        // Handle any remaining functions
+        if function != "" {
+            // Execute the Grace function and write the results to the string.
+            if let output = try evaluate(script: function, against: executable) {
                 result += output.string
             } else {
                 result += function

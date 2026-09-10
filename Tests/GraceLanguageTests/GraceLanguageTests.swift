@@ -109,6 +109,34 @@ final class GraceLanguageTests: XCTestCase {
         XCTAssert(result?.bool == true)
     }
     
+    func testCompileSegment() throws {
+        let code = """
+        import StandardLib;
+        
+        function Card10.OnItemA() returns string {
+            return "Item A";
+        }
+        """
+        
+        var exe = try GraceCompiler.shared.compile(program: code)
+        
+        let library = """
+        function OnItemB() returns string {
+            return "Item B";
+        }
+        """
+        
+        exe = try GraceCompiler.shared.compileSegment(executable: exe, programSegment: library)
+        
+        var result = try GraceRuntime.shared.evaluate(script: "@Card10.OnItemA()", against: exe)
+        
+        XCTAssert(result?.string == "Item A")
+        
+        result = try GraceRuntime.shared.evaluate(script: "@OnItemB()", against: exe)
+        
+        XCTAssert(result?.string == "Item B")
+    }
+    
     func testEmptyStringA() throws {
         let code = """
         import StandardLib;

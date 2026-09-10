@@ -81,6 +81,30 @@ open class GraceCompiler {
         try tokenizer.parse(program)
         functionStack = []
         
+        return try compileWorkload(executable: executable, tokenizer: tokenizer)
+    }
+    
+    /// Adds additional code to a Grace Executable from another source file.
+    /// - Parameters:
+    ///   - executable: The Grace Executable being compiled into.
+    ///   - programSegment: The new source code to append to the executable.
+    /// - Returns: The `GraceExecutable` extended with code from the input program segment.
+    public func compileSegment(executable:GraceExecutable, programSegment:String) throws -> GraceExecutable {
+        let tokenizer = GraceTokenizer()
+        
+        try tokenizer.parse(programSegment)
+        functionStack = []
+        
+        return try compileWorkload(executable: executable, tokenizer: tokenizer)
+    }
+    
+    /// Does the heavy  lifting for compiling a complete Grace Program or for compiling a code segment into an exesting executable.
+    /// - Parameters:
+    ///   - executable: The Grace Executable being compiled into.
+    ///   - tokenizer: The tokenizer with the broken down source code.
+    /// - Returns: The `GraceExecutable` generated from the input program.
+    private func compileWorkload(executable:GraceExecutable, tokenizer:GraceTokenizer) throws -> GraceExecutable {
+        
         // Interpret parse queue
         while tokenizer.count > 0 {
             

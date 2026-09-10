@@ -126,6 +126,34 @@ do {
 }
 ```
 
+Additionally, you can extend an existing **Grace Executable** using the `compileSegment` command. With this function you can include new **Global Variables**, **Enumerations**, **Structures** or **Functions** from an external script or a library written in Grace. For Example:
+
+```swift
+import GraceLanguage;
+
+var program:String {
+    return """
+    main {
+        call @print("Hello World!");
+    }
+    """
+}
+
+do {
+    var exe = try GraceCompiler.shared.compile(program: program)
+    
+    let library = """
+        function OnItemB() returns string {
+            return "Item B";
+        }
+        """
+        
+    exe = try GraceCompiler.shared.compileSegment(executable: exe, programSegment: library)
+} catch {
+    print("Error: \(error)")
+}
+```
+
 For more information, please see the included documentation.
 
 ## GraceRuntime
@@ -174,6 +202,16 @@ main{
 }
 ```
 
+Additionally, you can run a snippet of Grace Code without the required `main function` using:
+
+```swift
+do {
+    try GraceRuntime.shared.run(script: "call @print('Hello World!');")
+} catch {
+    print("Error: \(error)")
+}
+```
+
 ### Returning An Execution Result
 
 All of the execution methods built into the `GraceCompiler` can return a result to the calling program. For example:
@@ -194,7 +232,7 @@ let result = try GraceRuntime.shared.run(program: code)
 print("The result is: \(result?.int)")
 ```
 
-Upon executing the above code `result` will be a `GraceVariable` containing `10`. 
+Upon executing the above code `result` will be a `GraceVariable` containing `10`. As above, you can also run this against a precompiled Grace Executable.
 
 ### Expanding String Macros
 
@@ -204,7 +242,7 @@ The `GraceRuntime.expandMacros` function can expand **Grace Function Macros** in
 let text = GraceRuntime.shared.expandMacros(in: "The answer is: @intMath(40,'+',2)")
 ```
 
-After running the above code, the value of `text` will be `The answer is: 42`.
+After running the above code, the value of `text` will be `The answer is: 42`. Again, you can also run this against a precompiled **Grace Executable**.
 
 For more information, please see the included documentation.
 
