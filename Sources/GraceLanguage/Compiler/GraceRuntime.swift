@@ -27,6 +27,10 @@ open class GraceRuntime {
             return container.variables[name]
         } else if let parent = container.parent {
             return getVariable(name: name, from: parent)
+        } else if let executable = container.parent as? GraceExecutable {
+            if let base = executable.base {
+                return getVariable(name: name, from: base)
+            }
         }
         
         // Not found
@@ -42,6 +46,8 @@ open class GraceRuntime {
         if let executable {
             if let function = executable.functions[name] {
                 return function
+            } else if let base = executable.base {
+                return try getFunction(name: name, from: base)
             } else {
                 throw GraceRuntimeError.unknownFunction(message: "Function '\(name)' not found.")
             }
@@ -59,6 +65,8 @@ open class GraceRuntime {
         if let executable {
             if let enumeration = executable.enumerations[name] {
                 return enumeration
+            } else if let base = executable.base {
+                return try getEnumeration(name: name, from: base)
             } else {
                 throw GraceRuntimeError.unknownEnumeration(message: "Enumeration '\(name)' not found.")
             }
@@ -76,6 +84,8 @@ open class GraceRuntime {
         if let executable {
             if let container = executable.containers[name] {
                 return container
+            } else if let base = executable.base {
+                return try getContainer(name: name, from: base)
             } else {
                 throw GraceRuntimeError.unknownStructure(message: "Structure '\(name)' not found.")
             }
@@ -115,6 +125,21 @@ open class GraceRuntime {
         
         // Get the main function and run it
         let main = try GraceRuntime.getFunction(name: "main", from: executable)
+        result = try main.execute()
+        
+        return result
+    }
+    
+    /// Executes a function in a compiled Grace script.
+    /// - Parameters:
+    ///   - function: The name of the function to execute.
+    ///   - executable: The compiled Grace script.
+    /// - Returns: Returns the results of the execution as a `GraceVariable` or `nil` if nothing is returned.
+    @discardableResult public func execute(function:String, against executable:GraceExecutable) throws -> GraceVariable? {
+        var result:GraceVariable? = nil
+        
+        // Get the function and run it
+        let main = try GraceRuntime.getFunction(name: function, from: executable)
         result = try main.execute()
         
         return result

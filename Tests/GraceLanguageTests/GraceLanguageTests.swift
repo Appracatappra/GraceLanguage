@@ -137,6 +137,47 @@ final class GraceLanguageTests: XCTestCase {
         XCTAssert(result?.string == "Item B")
     }
     
+    func testCompileChain() throws {
+        let code = """
+        import StandardLib;
+        
+        func OnItemA() returns string {
+            return "Item A";
+        }
+        """
+        
+        let baseExe = try GraceCompiler.shared.compile(program: code)
+        
+        let library = """
+        import StandardLib;
+        
+        func OnItemB() returns string {
+            return "Item B";
+        }
+        
+        on ItemC() returns string begin
+            define first as string equals "Hello ";
+            define last as string equals "World!";
+        
+            return ($first plus $last);
+        end
+        """
+        
+        let exe = try GraceCompiler.shared.compile(program: library, against: baseExe)
+        
+        var result = try GraceRuntime.shared.execute(function: "OnItemA", against: exe)
+        
+        XCTAssert(result?.string == "Item A")
+        
+        result = try GraceRuntime.shared.execute(function: "OnItemB", against: exe)
+        
+        XCTAssert(result?.string == "Item B")
+        
+        result = try GraceRuntime.shared.execute(function: "ItemC", against: exe)
+        
+        XCTAssert(result?.string == "Hello World!")
+    }
+    
     func testEmptyStringA() throws {
         let code = """
         import StandardLib;

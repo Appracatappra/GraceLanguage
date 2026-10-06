@@ -178,6 +178,10 @@ do {
 }
 ```
 
+Additionally, you can chain compiled Grace scripts together using the `base` property of **Grace Compiler** `compile(program:String, against base:GraceExecutable? = nil)`. 
+
+Using a `base` executable allows the compilation to be broken into sections, with each section acting as its own "namespace". If a variable, function, enum or container is not defines in the current executable, the Grace Runtime will walk up the list of compiled scripts looking for it. Inversly, an element defined in the current executable will take presidence over elements from the base executable.
+
 For more information, please see the included documentation.
 
 ## GraceRuntime
@@ -270,6 +274,47 @@ let text = GraceRuntime.shared.expandMacros(in: "The answer is: @intMath(40,'+',
 After running the above code, the value of `text` will be `The answer is: 42`. Again, you can also run this against a precompiled **Grace Executable**.
 
 For more information, please see the included documentation.
+
+# Synonyms
+
+Several of the Grace keywords have different synonyms that can be used instead of the base keyword (example: `func` for `function`). Here are a list of accepted synonyms:
+
+* `enum` - `enumeration`
+* `struct` - `structure`
+* `variable`, `define` - `var`
+* `integer` - `int`
+* `boolean`, `true_false`, `yes_no` - `bool`
+* `number` - `float`
+* `yes` - `true`
+* `no` - `false`
+* `func`, `on` - `function`
+* `send` - `call`
+* `begin` - `{`
+* `end` - `}`
+* `as` - `:`
+* `equal`, `equals` - `=`
+* `and` - `&`
+* `or` - `|`
+* `not_equal` - `!=`
+* `less_than` - `<`
+* `greater_than` - `>`
+* `less_or_equal` - `<=`
+* `greater_or_equal` - `>=`
+* `plus`- `+`
+* `minus` - `-`
+* `times` - `*`
+* `divided_by` - `/`
+
+Useing the synonyms, you could write a Grace function as:
+
+```swift
+on ItemC() returns string begin
+    define first as string equals "Hello ";
+    define last as string equals "World!";
+    
+    return ($first plus $last);
+end
+```
 
 # Documentation
 

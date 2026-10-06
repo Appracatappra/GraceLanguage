@@ -13,6 +13,9 @@ import SimpleSerializer
 open class GraceExecutable:GraceInstruction, GraceAbortable {
     
     // MARK: - Properties
+    /// The base executable for this executable.
+    public var base:GraceExecutable? = nil
+    
     /// The parent `GraceInstruction` for this executable.
     public var parent:GraceInstruction? = nil
     

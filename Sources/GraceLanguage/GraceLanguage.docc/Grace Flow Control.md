@@ -18,14 +18,14 @@ if (value operator value) {
 
 Grace comparisons must always be in parenthesis and be in the form `(value operator value)`. The following operators are supported:
 
-* `=` - Test for equality.
-* `!=` - Does not equal.
-* `<` - Less than.
-* `>` - Greater than.
-* `<=` - Less than or equal to.
-* `>=` - Greater than or equal to.
-* `&` - And two boolean values.
-* `|` - Or two boolean values.
+* `=`, `equal`, `equals` - Test for equality.
+* `!=`, `not_equal` - Does not equal.
+* `<`, `less_than` - Less than.
+* `>`, `greater_than` - Greater than.
+* `<=`, `less_or_equal` - Less than or equal to.
+* `>=`, `greater_or_equal` - Greater than or equal to.
+* `&`, `and` - And two boolean values.
+* `|`, `or` - Or two boolean values.
 
 If the condition is met, all of the instructions are executed else all instructions in the optional `else` statement are executed.
 

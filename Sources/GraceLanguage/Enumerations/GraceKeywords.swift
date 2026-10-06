@@ -52,6 +52,38 @@ public enum GraceKeyword: String {
     case returnKey = "return"
     case callKey = "call"
     
+    // MARK: - Synonyms of other keywords
+    case enumKey = "enum"
+    case structKey = "struct"
+    case variableKey = "variable"
+    case defineKey = "define"
+    case integerKey = "integer"
+    case booleanKey = "boolean"
+    case numberKey = "number"
+    case trueFalseKey = "true_false"
+    case yesNoKey = "yes_no"
+    case yesKey = "yes"
+    case noKey = "no"
+    case funcKey = "func"
+    case onKey = "on"
+    case sendKey = "send"
+    case beginKey = "begin"
+    case endKey = "end"
+    case asKey = "as"
+    case equalKey = "equal"
+    case equalsKey = "equals"
+    case andKey = "and"
+    case orKey = "or"
+    case notEqualKey = "not_equal"
+    case lessThanKey = "less_than"
+    case greaterThanKey = "greater_than"
+    case lessEqualKey = "less_or_equal"
+    case greaterEqualKey = "greater_or_equal"
+    case plusKey = "plus"
+    case minusKey = "minus"
+    case timesKey = "times"
+    case divideKey = "divided_by"
+    
     // MARK: - Special Parser Keywords
     case emptyStringKey = "EMPTY_STRING"
     case semicolon = ";"
@@ -93,6 +125,70 @@ public enum GraceKeyword: String {
             return .semicolon
         }
         
-        return GraceKeyword(rawValue: text)
+        // Get keyword
+        var key = GraceKeyword(rawValue: text)
+        
+        // Process any Synonyms and return the base key they represent.
+        if let synonym = key {
+            // Take action based on synonym
+            switch synonym {
+            case .enumKey:
+                key = .enumerationKey
+            case .structKey:
+                key = .structureKey
+            case .variableKey, .defineKey:
+                key = .varKey
+            case .integerKey:
+                key = .integerKey
+            case .booleanKey, .trueFalseKey, .yesNoKey:
+                key = .boolKey
+            case .numberKey:
+                key = .floatKey
+            case .yesKey:
+                key = .trueKey
+            case .noKey:
+                key = .falseKey
+            case .funcKey, .onKey:
+                key = .functionKey
+            case .sendKey:
+                key = .callKey
+            case .beginKey:
+                key = .openCurlyBracket
+            case .endKey:
+                key = .closedCurlyBracket
+            case .asKey:
+                key = .colon
+            case .equalKey, .equalsKey:
+                key = .equal
+            case .andKey:
+                key = andSymbol
+            case .orKey:
+                key = .orSymbol
+            case .notEqualKey:
+                key = .notKey
+            case .lessThanKey:
+                key = .lessThan
+            case .greaterThan:
+                key = .greaterThan
+            case .lessEqualKey:
+                key = .lessThanOrEqualTo
+            case .greaterEqualKey:
+                key = .greaterThanOrEqualTo
+            case .plusKey:
+                key = .plus
+            case .minusKey:
+                key = .minus
+            case .timesKey:
+                key = .asterisk
+            case .divideKey:
+                key = .forwardSlash
+                
+            default:
+                break
+            }
+        }
+        
+        // Returns found key.
+        return key
     }
 }

@@ -73,87 +73,90 @@ open class GraceFormulaExpression:GraceExpression {
             rightValue.autoCastType()
         }
         
+        // Get operation key
+        let op = GraceKeyword.get(fromString: operation)
+        
         // Take action based on the left side type
         switch leftValue.type {
         case .string:
-            switch operation {
-            case "+":
+            switch op {
+            case .plus:
                 return GraceVariable(name: "result", value: leftValue.string + rightValue.string)
-            case "=":
+            case .equal:
                 return GraceVariable(name: "result", value: (leftValue.string == rightValue.string))
-            case "!=":
+            case .notEqual:
                 return GraceVariable(name: "result", value: (leftValue.string != rightValue.string))
             default:
                 throw GraceRuntimeError.formulaError(message: "Invalid fomula operation '\(operation)' for left side type '\(leftValue.type)'.")
             }
         case .enumeration:
-            switch operation {
-            case "=":
+            switch op {
+            case .equal:
                 return GraceVariable(name: "result", value: (leftValue.string == rightValue.string))
-            case "!=":
+            case .notEqual:
                 return GraceVariable(name: "result", value: (leftValue.string != rightValue.string))
             default:
                 throw GraceRuntimeError.formulaError(message: "Invalid fomula operation '\(operation)' for left side type '\(leftValue.type)'.")
             }
         case .bool:
-            switch operation {
-            case "=":
+            switch op {
+            case .equal:
                 return GraceVariable(name: "result", value: (leftValue.bool == rightValue.bool))
-            case "&":
+            case .andSymbol:
                 return GraceVariable(name: "result", value: (leftValue.bool && rightValue.bool))
-            case "|":
+            case .orSymbol:
                 return GraceVariable(name: "result", value: (leftValue.bool || rightValue.bool))
-            case "!=":
+            case .notEqual:
                 return GraceVariable(name: "result", value: (leftValue.bool != rightValue.bool))
             default:
                 throw GraceRuntimeError.formulaError(message: "Invalid fomula operation '\(operation)' for left side type '\(leftValue.type)'.")
             }
         case .int:
-            switch operation {
-            case "+":
+            switch op {
+            case .plus:
                 return GraceVariable(name: "result", value: leftValue.int + rightValue.int)
-            case "-":
+            case .minus:
                 return GraceVariable(name: "result", value: leftValue.int - rightValue.int)
-            case "*":
+            case .asterisk:
                 return GraceVariable(name: "result", value: leftValue.int * rightValue.int)
-            case "/":
+            case .forwardSlash:
                 return GraceVariable(name: "result", value: leftValue.int / rightValue.int)
-            case "=":
+            case .equal:
                 return GraceVariable(name: "result", value: (leftValue.int == rightValue.int))
-            case "!=":
+            case .notEqual:
                 return GraceVariable(name: "result", value: (leftValue.int != rightValue.int))
-            case "<":
+            case .lessThan:
                 return GraceVariable(name: "result", value: (leftValue.int < rightValue.int))
-            case ">":
+            case .greaterThan:
                 return GraceVariable(name: "result", value: (leftValue.int > rightValue.int))
-            case "<=":
+            case .lessThanOrEqualTo:
                 return GraceVariable(name: "result", value: (leftValue.int <= rightValue.int))
-            case ">=":
+            case .greaterThanOrEqualTo:
                 return GraceVariable(name: "result", value: (leftValue.int >= rightValue.int))
             default:
                 throw GraceRuntimeError.formulaError(message: "Invalid fomula operation '\(operation)' for left side type '\(leftValue.type)'.")
             }
         case .float:
-            switch operation {
-            case "+":
+            switch op {
+            case .plus:
                 return GraceVariable(name: "result", value: leftValue.float + rightValue.float)
-            case "-":
+            case .minus:
                 return GraceVariable(name: "result", value: leftValue.float - rightValue.float)
-            case "*":
+            case .asterisk:
                 return GraceVariable(name: "result", value: leftValue.float * rightValue.float)
-            case "/":
+            case .forwardSlash:
                 return GraceVariable(name: "result", value: leftValue.float / rightValue.float)
-            case "=":
+            case .equal:
                 return GraceVariable(name: "result", value: (leftValue.float == rightValue.float))
-            case "!=":
+            case .notEqual:
                 return GraceVariable(name: "result", value: (leftValue.float != rightValue.float))
-            case "<":
+            case .lessThan:
                 return GraceVariable(name: "result", value: (leftValue.float < rightValue.float))
-            case ">":
+            case .greaterThan:
                 return GraceVariable(name: "result", value: (leftValue.float > rightValue.float))
-            case "<=":
+            case .lessThanOrEqualTo:
                 return GraceVariable(name: "result", value: (leftValue.float <= rightValue.float))
-            case ">=":
+            case .greaterThanOrEqualTo:
                 return GraceVariable(name: "result", value: (leftValue.float >= rightValue.float))
             default:
                 throw GraceRuntimeError.formulaError(message: "Invalid fomula operation '\(operation)' for left side type '\(leftValue.type)'.")
