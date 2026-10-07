@@ -143,7 +143,10 @@ open class GraceVariable {
     /// Gets or sets the value as an integer.
     public var int:Int {
         get {
-            if let i = Int(rawValue[0]) {
+            let text = rawValue[0]
+            let trimmed = text.split(separator: ".").first.map(String.init) ?? text
+            
+            if let i = Int(trimmed) {
                 return i
             } else {
                 return 0
@@ -244,6 +247,14 @@ open class GraceVariable {
         self.name = name
         self.rawValue[0] = "\(value)"
         self.type = .float
+    }
+    
+    /// Creates a new instance.
+    /// - Parameters:
+    ///   - name: The name of the variable.
+    ///   - value: The `GraceStructure` to build the variable from.
+    public init(name:String, value:GraceContainer.GraceStructure) {
+        self.fromStructure(name: name, values: value)
     }
     
     /// Creates a new instance.
@@ -543,5 +554,26 @@ open class GraceVariable {
         }
         
         rawValue.insert(element, at: index)
+    }
+    
+    /// Attempts to convert the result into a Grace Structure.
+    /// - Returns: Returns the variable as a Grace Structure.
+    public func toStructure() -> GraceContainer.GraceStructure {
+        // Unwrap the variable into a structure.
+        let structure = GraceContainer.unbox(value: rawValue[0])
+        
+        // Return the unwrapped structure.
+        return structure
+    }
+    
+    /// Flat packs the Grace Structure into the variable.
+    /// - Parameters:
+    ///   - name: The name of the structure.
+    ///   - values: The key/value pairs that form the structure.
+    public func fromStructure(name:String, values:GraceContainer.GraceStructure) {
+        // Flat pack the structure into the variable.
+        subtypeName = name
+        type = .structure
+        rawValue[0] = GraceContainer.box(structure: values)
     }
 }

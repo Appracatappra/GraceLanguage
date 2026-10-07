@@ -166,6 +166,58 @@ function recurse(index:int) {
 }
 ```
 
+## Functions with Structures and Enumerations
+
+Grace functions can work with structures and enumerations as both parameters and return types. When specifying a return type, just use the generic `structure` or `enumeration`. For example:
+
+```swift
+import StandardLib;
+        
+struct Position {
+    x:int,
+    y:int
+}
+    
+func SendPosn() returns struct {
+    var posn:struct Position = new Position(x:100, y:50);
+    
+    return $posn;
+}
+```
+
+When passing a structure or enumeration as a parameter, just can specify just the generic `structure` or `enumeration` or you can optionally include the name of the structure or enumeration. See:
+
+```swift
+let code = """
+import StandardLib;
+    
+struct Position {
+    x:int,
+    y:int
+}
+    
+func AddPosn(posn:struct) returns int {
+    return ($posn~x + $posn~y);
+}
+```
+
+Or optionally:
+
+
+```swift
+let code = """
+import StandardLib;
+    
+struct Position {
+    x:int,
+    y:int
+}
+    
+func AddPosn(posn:struct Position) returns int {
+    return ($posn~x + $posn~y);
+}
+```
+
 ## Registering External Functions
 
 Grace can provide two way communication with the host environment by **registering** an external `function` written in Swift with either the `GraceCompiler` or a `GraceExecutable` created by the compiler.

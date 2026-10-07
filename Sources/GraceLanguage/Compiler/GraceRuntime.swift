@@ -134,14 +134,34 @@ open class GraceRuntime {
     /// - Parameters:
     ///   - function: The name of the function to execute.
     ///   - executable: The compiled Grace script.
+    ///   - parameters: A list of parameters to call against this function.
     /// - Returns: Returns the results of the execution as a `GraceVariable` or `nil` if nothing is returned.
-    @discardableResult public func execute(function:String, against executable:GraceExecutable) throws -> GraceVariable? {
+    @discardableResult public func execute(function:String, against executable:GraceExecutable, with parameters:[GraceVariable] = []) throws -> GraceVariable? {
         var result:GraceVariable? = nil
         
         // Get the function and run it
-        let main = try GraceRuntime.getFunction(name: function, from: executable)
-        result = try main.execute()
+        let subroutine = try GraceRuntime.getFunction(name: function, from: executable)
         
+        // Add any parameters to the function call.
+        var n = 0
+        for parameter in parameters {
+            // Is a valid parameter position?
+            if n < subroutine.parameterNames.count {
+                // Yes, get parameter name.
+                let name = subroutine.parameterNames[n]
+                
+                // Set variable to passed in parameter
+                subroutine.variables[name] = parameter
+            }
+            
+            // Increment index.
+            n += 1
+        }
+        
+        // Execute function.
+        result = try subroutine.execute()
+        
+        // Return result.
         return result
     }
     

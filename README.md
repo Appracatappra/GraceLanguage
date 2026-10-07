@@ -178,7 +178,7 @@ do {
 }
 ```
 
-Additionally, you can chain compiled Grace scripts together using the `base` property of **Grace Compiler** `compile(program:String, against base:GraceExecutable? = nil)`. 
+You can also chain compiled Grace scripts together using the `base` property of **Grace Compiler** `compile(program:String, against base:GraceExecutable? = nil)`. 
 
 Using a `base` executable allows the compilation to be broken into sections, with each section acting as its own "namespace". If a variable, function, enum or container is not defines in the current executable, the Grace Runtime will walk up the list of compiled scripts looking for it. Inversly, an element defined in the current executable will take presidence over elements from the base executable.
 

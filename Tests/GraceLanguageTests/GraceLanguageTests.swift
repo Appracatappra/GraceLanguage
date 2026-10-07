@@ -137,6 +137,63 @@ final class GraceLanguageTests: XCTestCase {
         XCTAssert(result?.string == "Item B")
     }
     
+    func testPassStructureOut() throws {
+        let code = """
+        import StandardLib;
+        
+        struct Position {
+            x:int,
+            y:int
+        }
+        
+        func SendPosn() returns struct {
+            var posn:struct Position = new Position(x:100, y:50);
+        
+            return $posn;
+        }
+        """
+        
+        let exe = try GraceCompiler.shared.compile(program: code)
+        
+        let result = try GraceRuntime.shared.execute(function: "SendPosn", against: exe)
+        
+        if let posn = result?.toStructure() {
+            XCTAssert(posn.property("x").int == 100)
+        }
+    }
+    
+    func testPassStructureIn() throws {
+        let code = """
+        import StandardLib;
+        
+        struct Position {
+            x:int,
+            y:int
+        }
+        
+        func AddPosn(posn:struct) returns int {
+            return ($posn~x + $posn~y);
+        }
+        """
+        
+        do {
+            let exe = try GraceCompiler.shared.compile(program: code)
+            
+            var posn:GraceContainer.GraceStructure = [:]
+            posn.setProperty("x", value: 100)
+            posn.setProperty("y", value: 50)
+            
+            let param = GraceVariable(name: "Position", value: posn)
+            
+            let result = try GraceRuntime.shared.execute(function: "AddPosn", against: exe, with: [param])
+            
+            XCTAssert(result?.int == 150)
+        } catch {
+            print("ERROR: \(error.localizedDescription)")
+        }
+        
+    }
+    
     func testCompileChain() throws {
         let code = """
         import StandardLib;
@@ -174,6 +231,25 @@ final class GraceLanguageTests: XCTestCase {
         XCTAssert(result?.string == "Item B")
         
         result = try GraceRuntime.shared.execute(function: "ItemC", against: exe)
+        
+        XCTAssert(result?.string == "Hello World!")
+    }
+    
+    func testAnyVar() throws {
+        let code = """
+        import StandardLib;
+        
+        on SayHi returns string begin
+            define first equals "Hello ";
+            define last equals "World!";
+        
+            return ($first plus $last);
+        end
+        """
+        
+        let exe = try GraceCompiler.shared.compile(program: code)
+        
+        let result = try GraceRuntime.shared.execute(function: "SayHi", against: exe)
         
         XCTAssert(result?.string == "Hello World!")
     }

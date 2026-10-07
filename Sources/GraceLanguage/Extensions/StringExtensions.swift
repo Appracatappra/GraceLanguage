@@ -25,7 +25,7 @@ extension String {
     /// If `true`, the string contains a `Bool` value.
     var isBool:Bool {
         switch self {
-        case "true", "false":
+        case "true", "false", "yes", "no":
             return true
         default:
             return false

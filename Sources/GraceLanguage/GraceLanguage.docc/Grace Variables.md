@@ -242,3 +242,81 @@ call @printf("User Name = {0}, email: {1}", [$user~name, $user~email]);
 ``` 
 
 > When dereferencing a `structure` you'll use the `$` character just before the `structure's` name (just like any other Grace Variable). Additionally, use the `~` to separate the `structure` variable name from the property name.
+
+### Converting a Variable to a Structure
+
+When working with `GraceStructures` in a host app, a few convenience routines have been added to `GraceVariable`.
+
+#### toStructure
+`toStructure()` converts the data stored in the variable into a `GraceStructure` from here you can access the parameters as follows:
+
+```swift
+let code = """
+import StandardLib;
+    
+struct Position {
+    x:int,
+    y:int
+}
+    
+func SendPosn() returns struct {
+    var posn:struct Position = new Position(x:100, y:50);
+    
+    return $posn;
+}
+"""
+    
+// Compile script.
+let exe = try GraceCompiler.shared.compile(program: code)
+
+// Get result
+let result = try GraceRuntime.shared.execute(function: "SendPosn", against: exe)
+    
+// Has result?
+if let posn = result?.toStructure() {
+	// Yes, get x coordinate.
+    let xcoord = posn.property("x").int
+}
+```
+
+The `.property(name)` function attempts to get a `GraceVariable` from the structure with the given name. It if cannot find the property, an empty `GraceVariable` is returned.
+
+#### fromStructure
+
+`fromStructure(name:String, values:GraceContainer.GraceStructure)` or `init(name:String, values:GraceContainer.GraceStructure)` takes a structure name and a key/value pair of `GraceVariables` and converts them into a single, flat-packed `GraceVariable` that can be sent to a Grace function as a parameter. For example:
+
+```swift
+let code = """
+import StandardLib;
+    
+struct Position {
+    x:int,
+    y:int
+}
+    
+func AddPosn(posn:struct) returns int {
+    return ($posn~x + $posn~y);
+}
+"""
+    
+do {
+	// Compile script. 
+    let exe = try GraceCompiler.shared.compile(program: code)
+    
+    // Build structure.
+    var posn:GraceContainer.GraceStructure = [:]
+    posn.setProperty("x", value: 100)
+    posn.setProperty("y", value: 50)
+    
+    // Flat pack to variable.
+    let param = GraceVariable(name: "Position", value: posn)
+    
+    // Call function.
+    let result = try GraceRuntime.shared.execute(function: "AddPosn", against: exe, with: [param])
+    
+    // Check result.
+    let good = (result?.int == 150)
+} catch {
+    print("ERROR: \(error.localizedDescription)")
+}
+```

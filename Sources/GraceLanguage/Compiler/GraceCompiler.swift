@@ -172,12 +172,20 @@ open class GraceCompiler {
                 function.parent = executable
                 pushFunction(function, into: executable)
                 
-                let (names, types) = try compileParameterDefineList(tokenizer: tokenizer, executable: executable)
-                for name in names {
-                    function.parameterNames.append(name)
-                }
-                for type in types {
-                    function.parameterTypes.append(type)
+                // Look ahead keyword
+                let token = tokenizer.lookAhead()
+                let keyword = GraceKeyword.get(fromString: token.value)
+                
+                // Has a parameter list?
+                if keyword == .openParenthesis {
+                    // Yes, get the parameter list.
+                    let (names, types) = try compileParameterDefineList(tokenizer: tokenizer, executable: executable)
+                    for name in names {
+                        function.parameterNames.append(name)
+                    }
+                    for type in types {
+                        function.parameterTypes.append(type)
+                    }
                 }
                 
                 let nextKey = tokenizer.lookAhead().value
@@ -241,7 +249,15 @@ open class GraceCompiler {
                 try ensureNextElementMatches(tokenizer: tokenizer, keyword: .atSymbol)
                 
                 instruction.functionName = tokenizer.pop().value
-                instruction.parameters = try compileParameterCallList(tokenizer: tokenizer, executable: executable, for: instruction)
+                
+                // Look ahead keyword
+                let token = tokenizer.lookAhead()
+                let keyword = GraceKeyword.get(fromString: token.value)
+                
+                // Has parameters?
+                if keyword == .openParenthesis {
+                    instruction.parameters = try compileParameterCallList(tokenizer: tokenizer, executable: executable, for: instruction)
+                }
                 
                 try ensureNextElementMatches(tokenizer: tokenizer, keyword: .semicolon)
                 
@@ -479,18 +495,26 @@ open class GraceCompiler {
     ///   - variable: The parent `GraceInstruction`.
     private func compileVariableDefinition(tokenizer:GraceTokenizer, executable:GraceExecutable, variable:GraceVarInstruction) throws {
         var element:GraceToken = GraceToken()
+        var token:GraceToken = GraceToken()
         var keyword:GraceKeyword = .addKey
         
         // Get name.
         element = tokenizer.pop()
         variable.name = element.value
         
-        // The next token must be a colon.
-        try ensureNextElementMatches(tokenizer: tokenizer, keyword: .colon)
+        // Is the next element a colon?
+        if try doesNextElementMatch(tokenizer: tokenizer, keyword: .colon) {
+            // Yes, get the next keyword as the variable type.
+            keyword = try getNextKeyword(from: tokenizer)
+        } else {
+            // No, assume the users want an any type of variable.
+            keyword = .anyKey
+        }
         
         // Get type.
-        var token = tokenizer.lookAhead()
-        keyword = try getNextKeyword(from: tokenizer)
+        token = tokenizer.lookAhead()
+        
+        // Take action based on the keyword type.
         switch keyword {
         case .anyKey:
             variable.type = .any
@@ -614,7 +638,15 @@ open class GraceCompiler {
             let expression = GraceFunctionExpression()
             expression.executable = executable
             expression.functionName = tokenizer.pop().value
-            expression.parameters = try compileParameterCallList(tokenizer: tokenizer, executable: executable, for: instruction)
+            
+            // Look ahead keyword
+            let token = tokenizer.lookAhead()
+            let keyword = GraceKeyword.get(fromString: token.value)
+            
+            // Has parameters?
+            if keyword == .openParenthesis {
+                expression.parameters = try compileParameterCallList(tokenizer: tokenizer, executable: executable, for: instruction)
+            }
             
             return expression
         case .numberSymbol:
@@ -937,6 +969,39 @@ open class GraceCompiler {
         let nextKeyword = try getNextKeyword(from: tokenizer)
         if keyword != nextKeyword {
             throw GraceCompilerError.invalidKeyword(message: "Expected `\(keyword.rawValue)` but found `\(nextKeyword.rawValue)`", row: token.row, col: token.col)
+        }
+    }
+    
+    /// Ensures the next keyword is one of the given values.
+    /// - Parameters:
+    ///   - tokenizer: The `GraceTokenizer` containing the preprocessed program text.
+    ///   - keywords: The list of keywords to match.
+    private func ensureNextElementMatches(tokenizer:GraceTokenizer, keywords: [GraceKeyword]) throws {
+        
+        let token = tokenizer.lookAhead()
+        let nextKeyword = try getNextKeyword(from: tokenizer)
+        if !keywords.contains(nextKeyword) {
+            throw GraceCompilerError.invalidKeyword(message: "Expected `\(keywords)` but found `\(nextKeyword.rawValue)`", row: token.row, col: token.col)
+        }
+    }
+    
+    /// Checks to see if the next token is of the type requested.
+    /// - Parameters:
+    ///   - tokenizer: The `GraceTokenizer` containing the preprocessed program text.
+    ///   - keyword: The keyword to match.
+    /// - Returns: Returns `true` if the keywords match, else returns `false`.
+    /// - Remark: If the keywords match, the keyword will be popped off of the tokenizer stack.
+    private func doesNextElementMatch(tokenizer:GraceTokenizer, keyword: GraceKeyword) throws -> Bool {
+        let token = tokenizer.lookAhead()
+        let nextKeyword = GraceKeyword.get(fromString: token.value)
+        
+        if keyword == nextKeyword {
+            // Yes, pop it off of the stack
+            tokenizer.pop()
+            
+            return true
+        } else {
+            return false
         }
     }
     
