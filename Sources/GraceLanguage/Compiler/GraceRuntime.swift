@@ -209,6 +209,26 @@ open class GraceRuntime {
         return try run(executable: exe)
     }
     
+    /// Complies and runs a snipit of Grace Program code against the given executable and returns the result.
+    /// - Parameters:
+    ///   - script: The text of the snipit that does not contain a `main` or `return` definition. This code will automatically be wrapped in a generated `main` and `return`.
+    ///   - executable: The Grace Executable to run the snippit against.
+    /// - Returns: Returns the results of the execution as a `GraceVariable` or `nil` if nothing is returned.
+    @discardableResult public func debugSnippit(script:String, against executable:GraceExecutable) throws -> GraceVariable? {
+        let program:String = "main{return \(script);}"
+        
+        do {
+            // Compile snippit
+            let exe = try GraceCompiler.shared.compileSegment(executable: executable, programSegment: program)
+            
+            // Attempt to run with return.
+            return try run(executable: exe)
+        } catch {
+            // If that failed, attempt to just run against the snipit
+            return try run(script: script, against: executable)
+        }
+    }
+    
     /// Expands any macros written as Grace Function Calls in the given string and inserts the result of executing the function into the output string.
     ///
     /// For Example:

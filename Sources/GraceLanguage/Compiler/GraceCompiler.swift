@@ -87,6 +87,12 @@ open class GraceCompiler {
             executable.functions[key] = function
         }
         
+        // Was a program passed in?
+        if program.isEmpty {
+            // No, return the executable anyway, as this may be part of a chain from an external base exe.
+            return executable
+        }
+        
         try tokenizer.parse(program)
         functionStack = []
         
@@ -100,6 +106,12 @@ open class GraceCompiler {
     /// - Returns: The `GraceExecutable` extended with code from the input program segment.
     public func compileSegment(executable:GraceExecutable, programSegment:String) throws -> GraceExecutable {
         let tokenizer = GraceTokenizer()
+        
+        // Was a program passed in?
+        if programSegment.isEmpty {
+            // No, return the executable anyway, as this may be part of a chain from an external executable.
+            return executable
+        }
         
         try tokenizer.parse(programSegment)
         functionStack = []
