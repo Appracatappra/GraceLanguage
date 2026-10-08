@@ -16,6 +16,9 @@ open class GraceExecutable:GraceInstruction, GraceAbortable {
     /// The base executable for this executable.
     public var base:GraceExecutable? = nil
     
+    /// Defines an optional namespace for the executable.
+    public var namespace:String = ""
+    
     /// The parent `GraceInstruction` for this executable.
     public var parent:GraceInstruction? = nil
     

@@ -70,15 +70,17 @@ open class GraceCompiler {
     /// Compiles the give Grace Program into a `GraceExecutable`.
     /// - Parameter program: The text containing Grace Program.
     /// - Parameter base: An optional "base class" executable.
+    /// - Parameter namespace: An optional "namespace" for the generated executable.
     /// - Returns: The `GraceExecutable` generated from the input program.
     /// - remark: Using a `base` executable allows the compilation to be broken into sections, with each section acting as its own "namespace". If a variable,
     /// function, enum or container is not defines in the current executable, the Grace Runtime will walk up the list of compiled scripts looking for it. Inversly, an element
     /// defined in the current executable will take presidence over elements from the base executable.
-    public func compile(program:String, against base:GraceExecutable? = nil) throws -> GraceExecutable {
+    public func compile(program:String, namespace:String = "", against base:GraceExecutable? = nil) throws -> GraceExecutable {
         let executable:GraceExecutable = GraceExecutable()
         let tokenizer = GraceTokenizer()
         
-        // Tie to "base class" executable.
+        // Tie to namespace and "base class" executable.
+        executable.namespace = namespace
         executable.base = base
         
         for (key,function) in externalFunctions {
