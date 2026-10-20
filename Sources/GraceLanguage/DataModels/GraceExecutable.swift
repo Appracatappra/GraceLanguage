@@ -40,6 +40,9 @@ open class GraceExecutable:GraceInstruction, GraceAbortable {
     /// If `true`, stop executing `GraceInstructions` and return to the caller.
     public var shouldAbort:Bool = false
     
+    /// If `true` any global instructions are awaiting execution, else the globals have been run and do not need to be executed again.
+    public var needsExecution:Bool = true
+    
     /// A `GraceVariable` holding the results to return to the caller.
     public var returnResult: GraceVariable? = nil
     
@@ -90,11 +93,19 @@ open class GraceExecutable:GraceInstruction, GraceAbortable {
         
         shouldAbort = false
         returnResult = nil
-        for instruction in instructions {
-            try instruction.execute()
-            if shouldAbort {
-                break
+        
+        // Needs execution?
+        if needsExecution {
+            // Process all instructions.
+            for instruction in instructions {
+                try instruction.execute()
+                if shouldAbort {
+                    break
+                }
             }
+            
+            // Clear the execution flag.
+            needsExecution = false
         }
         
         // Execute the instructions on the any attached base as well
