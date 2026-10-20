@@ -97,6 +97,11 @@ open class GraceExecutable:GraceInstruction, GraceAbortable {
             }
         }
         
+        // Execute the instructions on the any attached base as well
+        if let base {
+            return try base.execute()
+        }
+        
         return returnResult
     }
 }
