@@ -83,8 +83,13 @@ open class GraceCompiler {
         executable.namespace = namespace
         executable.base = base
         
-        for (key,function) in externalFunctions {
-            executable.functions[key] = function
+        // Has a base exe?
+        // We don't want to add these again since the base will include them.
+        if base == nil {
+            // No, safe to copy over.
+            for (key,function) in externalFunctions {
+                executable.functions[key] = function
+            }
         }
         
         // Was a program passed in?

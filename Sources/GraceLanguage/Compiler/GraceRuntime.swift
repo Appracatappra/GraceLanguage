@@ -27,14 +27,30 @@ open class GraceRuntime {
             return container.variables[name]
         } else if let parent = container.parent {
             return getVariable(name: name, from: parent)
-        } else if let executable = container.parent as? GraceExecutable {
-            if let base = executable.base {
-                return getVariable(name: name, from: base)
-            }
         }
         
-        // Not found
-        return nil
+        // Not found, attempt to locate in the base executable.
+        return getBaseVariable(name: name, from: shared.coreExecutable)
+    }
+    
+    /// Search for a variable definition in the base executable that launched this script.
+    /// - Parameters:
+    ///   - name: The name of the varaible.
+    ///   - base: The base executable.
+    /// - Returns: Returns the requested variable of `nil` if not found.
+    public static func getBaseVariable(name:String, from base:GraceExecutable?) -> GraceVariable? {
+        
+        // Ensure we have a base
+        guard let base else {
+            return nil
+        }
+        
+        if base.variables.keys.contains(name) {
+            return base.variables[name]
+        }
+        
+        // Attempt to crawl the executable chain.
+        return getBaseVariable(name: name, from: base.base)
     }
     
     /// Gets a `GraceFunction` from the given `GraceInstruction`.
@@ -94,6 +110,10 @@ open class GraceRuntime {
         }
     }
     
+    // MARK: - Properties
+    /// Holds the core executable that is running a current set of instructions.
+    public var coreExecutable:GraceExecutable? = nil
+    
     // MARK: - Initializers
     /// Creates a new instance.
     public init() {
@@ -107,9 +127,16 @@ open class GraceRuntime {
     @discardableResult public func run(executable:GraceExecutable) throws -> GraceVariable? {
         var result:GraceVariable? = nil
         
+        // Save the core executable and run any instructions on it.
+        coreExecutable = executable
+        result = try coreExecutable?.execute()
+        
         // Get the main function and run it
         let main = try GraceRuntime.getFunction(name: "main", from: executable)
         result = try main.execute()
+        
+        // Release the executable
+        coreExecutable = nil
         
         return result
     }
@@ -123,9 +150,16 @@ open class GraceRuntime {
         // Compile program
         let executable = try GraceCompiler.shared.compile(program: program)
         
+        // Save the core executable and run any instructions on it.
+        coreExecutable = executable
+        result = try coreExecutable?.execute()
+        
         // Get the main function and run it
         let main = try GraceRuntime.getFunction(name: "main", from: executable)
         result = try main.execute()
+        
+        // Release the executable
+        coreExecutable = nil
         
         return result
     }
@@ -138,6 +172,10 @@ open class GraceRuntime {
     /// - Returns: Returns the results of the execution as a `GraceVariable` or `nil` if nothing is returned.
     @discardableResult public func execute(function:String, against executable:GraceExecutable, with parameters:[GraceVariable] = []) throws -> GraceVariable? {
         var result:GraceVariable? = nil
+        
+        // Save the core executable and run any instructions on it.
+        coreExecutable = executable
+        result = try coreExecutable?.execute()
         
         // Get the function and run it
         let subroutine = try GraceRuntime.getFunction(name: function, from: executable)
@@ -160,6 +198,9 @@ open class GraceRuntime {
         
         // Execute function.
         result = try subroutine.execute()
+        
+        // Release the executable
+        coreExecutable = nil
         
         // Return result.
         return result

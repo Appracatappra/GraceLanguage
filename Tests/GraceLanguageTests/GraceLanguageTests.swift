@@ -219,6 +219,10 @@ final class GraceLanguageTests: XCTestCase {
         let code = """
         import StandardLib;
         
+        var hello:string = "Hi there";
+        
+        var someVar:string;
+        
         func OnItemA() returns string {
             return "Item A";
         }
@@ -230,7 +234,7 @@ final class GraceLanguageTests: XCTestCase {
         import StandardLib;
         
         func OnItemB() returns string {
-            return "Item B";
+            return $hello;
         }
         
         on ItemC() returns string begin
@@ -249,7 +253,7 @@ final class GraceLanguageTests: XCTestCase {
         
         result = try GraceRuntime.shared.execute(function: "OnItemB", against: exe)
         
-        XCTAssert(result?.string == "Item B")
+        XCTAssert(result?.string == "Hi there")
         
         result = try GraceRuntime.shared.execute(function: "ItemC", against: exe)
         
