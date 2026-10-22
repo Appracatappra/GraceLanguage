@@ -25,6 +25,9 @@ public enum GraceParseError: Error {
     /// The parser encountered a value in double quotes that is not properly terminated. `message` contains the details of the given failure.
     case mismatchedDoubleQuotes(message: String, row: Int, col: Int)
     
+    /// The parser encountered a value in block quotes that is not properly terminated. `message` contains the details of the given failure.
+    case mismatchedBlockQuotes(message: String, row: Int, col: Int)
+    
     /// The parser encountered a value in parenthesis that is not properly terminated. `message` contains the details of the given failure.
     case mismatchedParenthesis(message: String, row: Int, col: Int)
     

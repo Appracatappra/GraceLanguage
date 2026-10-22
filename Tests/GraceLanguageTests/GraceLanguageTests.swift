@@ -109,6 +109,27 @@ final class GraceLanguageTests: XCTestCase {
         XCTAssert(result?.bool == true)
     }
     
+    func testBlockQuote() throws {
+        let code = """
+        import StandardLib;
+        
+        main {
+            var n:string = 
+        "Line 1
+        Line 2
+        Line 3";
+        
+            call @printf("Output: {0}", [$n]);
+        
+            return true;
+        }
+        """
+        
+        let result = try GraceRuntime.shared.run(program: code)
+        
+        XCTAssert(result?.bool == true)
+    }
+    
     func testCompileSegment() throws {
         let code = """
         import StandardLib;

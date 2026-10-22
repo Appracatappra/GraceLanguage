@@ -26,6 +26,9 @@ open class GraceTokenizer {
         /// Parsing a double quoted value (").
         case inDoubleQuote
         
+        /// Parsing a block quoted value (« »).
+        case inBlockQuote
+        
         /// Parsing an inline comment started by --. Everything to the end of the current line will be considered part of the comment.
         case inComment
     }
@@ -203,6 +206,35 @@ open class GraceTokenizer {
                             // Embedded double quote.
                             value += "\""
                             lastChar = ""
+                        }
+                    } else {
+                        push(element: GraceToken(type: .doubleQuotedString, value: value, row: lineNumber, col: charPosition))
+                        value = ""
+                        state = .seekKey
+                    }
+                case .inComment:
+                    break
+                default:
+                    value += char
+                }
+            case "«":
+                switch(state) {
+                case .seekKey:
+                    state = .inBlockQuote
+                case .inComment:
+                    break
+                default:
+                    value += char
+                }
+            case "»":
+                switch(state) {
+                case .inBlockQuote:
+                    if lastChar == "«" {
+                        // Empty string?
+                        if value.isEmpty {
+                            push(element: GraceToken(type: .doubleQuotedString, value: "EMPTY_STRING", row: lineNumber, col: charPosition))
+                            value = ""
+                            state = .seekKey
                         }
                     } else {
                         push(element: GraceToken(type: .doubleQuotedString, value: value, row: lineNumber, col: charPosition))
@@ -451,6 +483,9 @@ open class GraceTokenizer {
             throw GraceParseError.mismatchedSingleQuotes(message: "Parsing Section: \(lastCodeSegment())", row: lineNumber, col: charPosition)
         case .inDoubleQuote:
             throw GraceParseError.mismatchedDoubleQuotes(message: "Parsing Section: \(lastCodeSegment())", row: lineNumber, col: charPosition)
+            
+        case .inBlockQuote:
+            throw GraceParseError.mismatchedBlockQuotes(message: "Parsing Section: \(lastCodeSegment())", row: lineNumber, col: charPosition)
         default:
             if nestParenthesis > 0 {
                 throw GraceParseError.mismatchedParenthesis(message: "Parsing Section: \(lastCodeSegment())", row: lineNumber, col: charPosition)
