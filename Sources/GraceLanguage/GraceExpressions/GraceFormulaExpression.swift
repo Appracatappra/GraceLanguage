@@ -76,6 +76,8 @@ open class GraceFormulaExpression:GraceExpression {
         // Get operation key
         let op = GraceKeyword.get(fromString: operation)
         
+        GraceRuntime.shared.logTracerEvent(message: "Evaluating formula `\(leftValue.string) \(String(describing: op)) \(rightValue.string)`.")
+        
         // Take action based on the left side type
         switch leftValue.type {
         case .string:

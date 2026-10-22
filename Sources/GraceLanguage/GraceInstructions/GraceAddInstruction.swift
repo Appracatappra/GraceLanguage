@@ -64,6 +64,8 @@ open class GraceAddInstruction:GraceInstruction {
         var variable:GraceVariable? = nil
         var index:Int = -1
         
+        GraceRuntime.shared.logTracerEvent(message: "Evaluating add expression for `\(variableName)`.")
+        
         guard let value = try expression?.evaluate() else {
             throw GraceRuntimeError.variableError(message: "Unable to evaluate expression to change variable `\(variableName)`.")
         }
@@ -85,6 +87,8 @@ open class GraceAddInstruction:GraceInstruction {
                 variable.rawValue.insert(value.string, at: index)
             }
             variable.isArray = true
+            
+            GraceRuntime.shared.logTracerEvent(message: "`\(variableName)` set to `\(variable.rawValue)`.")
         } else {
             throw GraceRuntimeError.unknownVariable(message: "Variable `\(variableName)` not found.")
         }

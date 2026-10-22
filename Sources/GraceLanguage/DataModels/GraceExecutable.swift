@@ -96,6 +96,8 @@ open class GraceExecutable:GraceInstruction, GraceAbortable {
         
         // Needs execution?
         if needsExecution {
+            GraceRuntime.shared.logTracerEvent(message: "Executing global instructions on Exe `\(namespace)`.")
+            
             // Process all instructions.
             for instruction in instructions {
                 try instruction.execute()
@@ -106,6 +108,8 @@ open class GraceExecutable:GraceInstruction, GraceAbortable {
             
             // Clear the execution flag.
             needsExecution = false
+        } else {
+            GraceRuntime.shared.logTracerEvent(message: "Skipping global instructions on Exe `\(namespace)`.")
         }
         
         // Execute the instructions on the any attached base as well

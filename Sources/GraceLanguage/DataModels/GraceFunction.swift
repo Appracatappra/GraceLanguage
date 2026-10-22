@@ -93,10 +93,14 @@ open class GraceFunction:GraceInstruction, GraceAbortable {
     public func execute() throws -> GraceVariable? {
         
         if let externalFunction {
+            GraceRuntime.shared.logTracerEvent(message: "Executing external function `\(name)`.")
             return externalFunction(variables)
         } else {
             shouldAbort = false
             returnResult = nil
+            
+            GraceRuntime.shared.logTracerEvent(message: "Executing function `\(name)`.")
+            
             for instruction in instructions {
                 try instruction.execute()
                 if shouldAbort {

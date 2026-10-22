@@ -95,6 +95,8 @@ open class GraceForInstruction:GraceInstruction, GraceAbortable {
         for n in a...b {
             iterator.int = n
             
+            GraceRuntime.shared.logTracerEvent(message: "Executing for...next iteration \(n).")
+            
             for instruction in instructions {
                 try instruction.execute()
                 if shouldAbort {

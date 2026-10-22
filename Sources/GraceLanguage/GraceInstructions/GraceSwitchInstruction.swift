@@ -83,6 +83,8 @@ open class GraceSwitchInstruction:GraceInstruction, GraceAbortable {
             throw GraceRuntimeError.formulaError(message: "Unable to evaluate an expression for a Switch statement.")
         }
         
+        GraceRuntime.shared.logTracerEvent(message: "Evaluating switch statment.")
+        
         for item in cases {
             if let value = try item.textExpression?.evaluate() {
                 if value.string == testValue.string {

@@ -60,6 +60,8 @@ open class GraceDecrementInstruction:GraceInstruction {
         
         variable.int = variable.int - 1
         
+        GraceRuntime.shared.logTracerEvent(message: "Decrementing `\(variableName)` = \(variable.rawValue).")
+        
         return nil
     }
 }

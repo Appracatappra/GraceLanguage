@@ -61,6 +61,8 @@ open class GraceVariableExpression:GraceExpression {
         var variable:GraceVariable? = nil
         var index:Int = -1
         
+        GraceRuntime.shared.logTracerEvent(message: "Evaluating variable expression `\(variableName)`.")
+        
         if let parent {
             variable = GraceRuntime.getVariable(name: variableName, from: parent)
         }
@@ -90,6 +92,8 @@ open class GraceVariableExpression:GraceExpression {
                     throw GraceRuntimeError.indexOutOfBounds(message: "Index `\(index)` is out of bounds in variable `\(variable.name)`.")
                 }
             }
+            
+            GraceRuntime.shared.logTracerEvent(message: "Variable `\(variableName)` resolved to `\(variable.rawValue)`.")
         } else {
             throw GraceRuntimeError.unknownVariable(message: "Variable `\(variableName)` not found.")
         }

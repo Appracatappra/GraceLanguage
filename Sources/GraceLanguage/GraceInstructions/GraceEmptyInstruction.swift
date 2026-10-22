@@ -52,6 +52,8 @@ open class GraceEmptyInstruction:GraceInstruction {
     public func execute() throws -> GraceVariable? {
         var variable:GraceVariable? = nil
         
+        GraceRuntime.shared.logTracerEvent(message: "Erasing array `\(variableName)`.")
+        
         if let parent {
             variable = GraceRuntime.getVariable(name: variableName, from: parent)
         }

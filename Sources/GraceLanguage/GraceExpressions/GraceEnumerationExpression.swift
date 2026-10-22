@@ -62,6 +62,8 @@ open class GraceEnumerationExpression:GraceExpression {
         
         let enumeration = try GraceRuntime.getEnumeration(name: enumerationName, from: executable)
         
+        GraceRuntime.shared.logTracerEvent(message: "Getting property `\(propertyName)` from enumeration `\(enumerationName)`.")
+        
         if enumeration.hasProperty(propertyName) {
             return GraceVariable(name: "result", value: propertyName, type: .enumeration)
         } else {

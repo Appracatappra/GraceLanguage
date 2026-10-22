@@ -39,6 +39,9 @@ open class GraceConstantExpression:GraceExpression {
     /// Evaluates the expression.
     /// - Returns: Returns the constant value.
     public func evaluate() throws -> GraceVariable? {
+        
+        GraceRuntime.shared.logTracerEvent(message: "Setting constant value `\(value)`")
+        
         return GraceVariable(name: "constant", value: value)
     }
 }

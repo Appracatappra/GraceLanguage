@@ -10,18 +10,38 @@ import SwiftletUtilities
 
 /// Runs a Grace Program.
 open class GraceRuntime {
+    /// Defines a type that allows the host app to watch for debug tracer events.
+    public typealias DebugTracerEvent = (String) -> Void
     
     // MARK: - Static Properties
     /// A common shared instance of the Grace Runtime.
     public nonisolated(unsafe) static let shared:GraceRuntime = GraceRuntime()
     
     // MARK: - Static Functions
+    /// Inspects a GraceInstruction and returns the actual type.
+    /// - Parameter object: The object to inspect.
+    /// - Returns: Returns the actual type.
+    static func inspect(_ object:GraceInstruction) -> String {
+        let actualType = type(of: object as Any)
+        return "\(actualType)"
+    }
+    
+    /// Inspects a GraceExpression and returns the actual type.
+    /// - Parameter object: The object to inspect.
+    /// - Returns: Returns the actual type.
+    static func inspect(_ object:GraceExpression) -> String {
+        let actualType = type(of: object as Any)
+        return "\(actualType)"
+    }
+    
     /// Gets a `GraceVariable` from the given `GraceInstruction`.
     /// - Parameters:
     ///   - name: The name of the variable to get.
     ///   - container: The `GraceInstruction` holding the variable.
     /// - Returns: Returns the requested variable of `nil` if not found.
     public static func getVariable(name:String, from container:GraceInstruction) -> GraceVariable? {
+        
+        shared.logTracerEvent(message: "Scanning `\(GraceRuntime.inspect(container))` for variable `\(name)`.")
         
         if container.variables.keys.contains(name) {
             return container.variables[name]
@@ -42,8 +62,11 @@ open class GraceRuntime {
         
         // Ensure we have a base
         guard let base else {
+            shared.logTracerEvent(message: "Exhausted sources, variable `\(name)` not located.")
             return nil
         }
+        
+        shared.logTracerEvent(message: "Scanning Exe `\(base.namespace)` for variable `\(name)`.")
         
         if base.variables.keys.contains(name) {
             return base.variables[name]
@@ -59,7 +82,10 @@ open class GraceRuntime {
     ///   - container: The `GraceInstruction` holding the function.
     /// - Returns: Returns the requested function of `nil` if not found.
     public static func getFunction(name:String, from executable:GraceExecutable?) throws -> GraceFunction {
+        
         if let executable {
+            shared.logTracerEvent(message: "Scanning Exe `\(executable.namespace)` for function `\(name)`.")
+            
             if let function = executable.functions[name] {
                 return function
             } else if let base = executable.base {
@@ -79,6 +105,8 @@ open class GraceRuntime {
     /// - Returns: Returns the requested enumeration of `nil` if not found.
     public static func getEnumeration(name:String, from executable:GraceExecutable?) throws -> GraceEnumeration {
         if let executable {
+            shared.logTracerEvent(message: "Scanning Exe `\(executable.namespace)` for enumeration `\(name)`.")
+            
             if let enumeration = executable.enumerations[name] {
                 return enumeration
             } else if let base = executable.base {
@@ -98,6 +126,8 @@ open class GraceRuntime {
     /// - Returns: Returns the requested container of `nil` if not found.
     public static func getContainer(name:String, from executable:GraceExecutable?) throws -> GraceContainer {
         if let executable {
+            shared.logTracerEvent(message: "Scanning Exe `\(executable.namespace)` for container `\(name)`.")
+            
             if let container = executable.containers[name] {
                 return container
             } else if let base = executable.base {
@@ -114,6 +144,12 @@ open class GraceRuntime {
     /// Holds the core executable that is running a current set of instructions.
     public var coreExecutable:GraceExecutable? = nil
     
+    /// Allows the host app to watch for debug trace events.
+    public var handleTraceEvent:DebugTracerEvent? = nil
+    
+    /// If `true` the debug tracer is on and will report to the host app, else it will not.
+    public var isTracerOn:Bool = false
+    
     // MARK: - Initializers
     /// Creates a new instance.
     public init() {
@@ -121,6 +157,24 @@ open class GraceRuntime {
     }
     
     // MARK: - Functions
+    /// Logs a debug trace event with the host app.
+    /// - Parameter message: The trace message to log.
+    public func logTracerEvent(message:String) {
+        
+        // Ensure the tracer is active.
+        guard isTracerOn else {
+            return
+        }
+        
+        // Ensure the host has attached a trace handler
+        guard let handleTraceEvent else {
+            return
+        }
+        
+        // Send the trace message to the host.
+        handleTraceEvent(message)
+    }
+    
     /// Runs the given `GraceExecutable`.
     /// - Parameter executable: The executable to run.
     /// - Returns: Returns the results of the execution as a `GraceVariable` or `nil` if nothing is returned.

@@ -41,6 +41,8 @@ open class GraceArrayExpression:GraceExpression {
     public func evaluate() throws -> GraceVariable? {
         let array:GraceVariable = GraceVariable()
         
+        GraceRuntime.shared.logTracerEvent(message: "Evaluating an array with \(elements.count) elements.")
+        
         array.rawValue = []
         for element in elements {
             if let value = try element.evaluate() {

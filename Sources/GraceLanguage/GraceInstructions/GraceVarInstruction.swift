@@ -118,6 +118,8 @@ open class GraceVarInstruction:GraceInstruction {
         // Store variable in parent
         parent.variables[name] = variable
         
+        GraceRuntime.shared.logTracerEvent(message: "Created variable `\(name)` in `\(GraceRuntime.inspect(parent))`.")
+        
         return variable
     }
     

@@ -83,6 +83,9 @@ open class GraceIterateInstruction:GraceInstruction, GraceAbortable {
             returnResult = nil
             for value in variable.rawValue {
                 iterator.rawValue = [value]
+                
+                GraceRuntime.shared.logTracerEvent(message: "Iterating loop on `\(value)`.")
+                
                 for instruction in instructions {
                     try instruction.execute()
                     if shouldAbort {

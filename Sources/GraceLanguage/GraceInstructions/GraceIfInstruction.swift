@@ -81,6 +81,8 @@ open class GraceIfInstruction:GraceInstruction, GraceAbortable {
         shouldAbort = false
         returnResult = nil
         if value.bool {
+            GraceRuntime.shared.logTracerEvent(message: "Executing `true` branch of if...then.")
+            
             for instruction in trueInstructions {
                 try instruction.execute()
                 if shouldAbort {
@@ -88,6 +90,8 @@ open class GraceIfInstruction:GraceInstruction, GraceAbortable {
                 }
             }
         } else {
+            GraceRuntime.shared.logTracerEvent(message: "Executing `false` branch of if...then.")
+            
             for instruction in falseInstructions {
                 try instruction.execute()
                 if shouldAbort {

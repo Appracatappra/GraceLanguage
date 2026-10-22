@@ -58,6 +58,8 @@ open class GraceDeleteInstruction:GraceInstruction {
         var variable:GraceVariable? = nil
         var index:Int = 0
         
+        GraceRuntime.shared.logTracerEvent(message: "Deleting item from array `\(variableName)`.")
+        
         if let parent {
             variable = GraceRuntime.getVariable(name: variableName, from: parent)
         }

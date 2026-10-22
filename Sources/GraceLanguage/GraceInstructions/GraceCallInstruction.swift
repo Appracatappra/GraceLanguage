@@ -62,9 +62,11 @@ open class GraceCallInstruction:GraceInstruction {
     
     // MARK: - Functions
     /// Executes the instruction and calls the given `GraceFunction` with the given list of parameter values.
-    /// - Returns: <#description#>
+    /// - Returns: Returns the variable result.
     public func execute() throws -> GraceVariable? {
         let function = try GraceRuntime.getFunction(name: functionName, from: executable)
+        
+        GraceRuntime.shared.logTracerEvent(message: "Calling function `\(functionName)`.")
         
         // Assign parameters to function
         for n in 0..<function.parameterNames.count {

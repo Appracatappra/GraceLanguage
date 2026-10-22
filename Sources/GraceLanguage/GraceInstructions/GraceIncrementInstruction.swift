@@ -60,6 +60,8 @@ open class GraceIncrementInstruction:GraceInstruction {
         
         variable.int = variable.int + 1
         
+        GraceRuntime.shared.logTracerEvent(message: "Incrementing variable `\(variableName)` = \(variable.rawValue).")
+        
         return nil
     }
 }

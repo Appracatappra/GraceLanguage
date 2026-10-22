@@ -65,6 +65,8 @@ open class GraceNewExpression:GraceExpression {
         let prototype = try GraceRuntime.getContainer(name: structureName, from: executable)
         var structure = prototype.new()
         
+        GraceRuntime.shared.logTracerEvent(message: "Creating new instance of structure `\(structureName)`.")
+        
         // Set values from passed parameters
         for n in 0..<parameterNames.count {
             let name = parameterNames[n]

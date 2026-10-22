@@ -45,6 +45,8 @@ open class GraceNotExpression:GraceExpression {
             throw GraceRuntimeError.formulaError(message: "Missing operand for NOT expression.")
         }
         
+        GraceRuntime.shared.logTracerEvent(message: "Negating a boolean.")
+        
         switch value.type {
         case .bool:
             return GraceVariable(name: "result", value: !value.bool)

@@ -67,6 +67,8 @@ open class GraceReturnInstruction:GraceInstruction {
             }
         }
         
+        GraceRuntime.shared.logTracerEvent(message: "Returning result `\(String(describing: value))`.")
+        
         if let parent {
             bubbleUpAbort(for: parent, value: value)
         }

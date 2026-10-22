@@ -68,6 +68,8 @@ open class GraceWhileInstruction:GraceInstruction, GraceAbortable {
         var loop:Bool = true
         
         repeat {
+            GraceRuntime.shared.logTracerEvent(message: "Looping over while...")
+            
             if let value = try whileExpression?.evaluate() {
                 loop = value.bool
                 if loop {

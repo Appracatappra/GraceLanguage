@@ -70,6 +70,9 @@ open class GraceRepeatInstruction:GraceInstruction, GraceAbortable {
         repeat {
             shouldAbort = false
             returnResult = nil
+            
+            GraceRuntime.shared.logTracerEvent(message: "Repeating loop...")
+            
             for instruction in instructions {
                 try instruction.execute()
                 if shouldAbort {

@@ -56,6 +56,8 @@ open class GraceFunctionExpression:GraceExpression {
     public func evaluate() throws -> GraceVariable? {
         let function = try GraceRuntime.getFunction(name: functionName, from: executable)
         
+        GraceRuntime.shared.logTracerEvent(message: "Executing function `\(functionName)`.")
+        
         // Assign parameters to function
         for n in 0..<function.parameterNames.count {
             let name = function.parameterNames[n]

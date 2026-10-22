@@ -89,6 +89,8 @@ open class GraceLetInstruction:GraceInstruction {
         var variable:GraceVariable? = nil
         var index:Int = -1
         
+        GraceRuntime.shared.logTracerEvent(message: "Setting variable `\(variableName)`.")
+        
         guard let value = try expression?.evaluate() else {
             throw GraceRuntimeError.variableError(message: "Unable to evaluate expression to change variable `\(variableName)`.")
         }
@@ -135,6 +137,8 @@ open class GraceLetInstruction:GraceInstruction {
                     throw GraceRuntimeError.unknownProperty(message: "Invalid property `\(variable.string)` for enumeration `\(enumeration.name)` when setting variable `\(variable.name)`.")
                 }
             }
+            
+            GraceRuntime.shared.logTracerEvent(message: "Variable `\(variableName)` = `\(variable.rawValue)`.")
         } else {
             throw GraceRuntimeError.unknownVariable(message: "Variable `\(variableName)` not found.")
         }
