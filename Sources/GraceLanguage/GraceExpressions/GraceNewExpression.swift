@@ -39,6 +39,9 @@ open class GraceNewExpression:GraceExpression {
     /// The list of property values being set.
     public var parameterValues:[GraceExpression] = []
     
+    /// Provides access to the executable where this object if defined.
+    public weak var coreExe:GraceExecutable? = nil
+    
     // MARK: - Initializers
     /// Creates a new instance.
     public init() {
@@ -51,11 +54,12 @@ open class GraceNewExpression:GraceExpression {
     ///   - structureName: The name of the `GraceStructure` to instantiate.
     ///   - parameterNames: The list of property names being set.
     ///   - parameterValues: The list of property values being set.
-    public init(executable: GraceExecutable? = nil, structureName: String, parameterNames: [String] = [], parameterValues: [GraceExpression] = []) {
+    public init(exe:GraceExecutable, executable: GraceExecutable? = nil, structureName: String, parameterNames: [String] = [], parameterValues: [GraceExpression] = []) {
         self.executable = executable
         self.structureName = structureName
         self.parameterNames = parameterNames
         self.parameterValues = parameterValues
+        self.coreExe = exe
     }
     
     // MARK: - Functions
@@ -65,7 +69,7 @@ open class GraceNewExpression:GraceExpression {
         let prototype = try GraceRuntime.getContainer(name: structureName, from: executable)
         var structure = prototype.new()
         
-        GraceRuntime.shared.logTracerEvent(message: "Creating new instance of structure `\(structureName)`.")
+        GraceRuntime.shared.logTracerEvent(type: .newExe, message: "Creating new instance of structure `\(structureName)`.")
         
         // Set values from passed parameters
         for n in 0..<parameterNames.count {

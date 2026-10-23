@@ -67,6 +67,9 @@ open class GraceVarInstruction:GraceInstruction {
     /// The default value for the `GraceVariable`.
     public var defaultValue:GraceExpression? = nil
     
+    /// Provides access to the executable where this object if defined.
+    public weak var coreExe:GraceExecutable? = nil
+    
     // MARK: - Initializers
     /// Creates a new instance.
     public init() {
@@ -81,13 +84,15 @@ open class GraceVarInstruction:GraceInstruction {
     ///   - subtypeName: For enumerations or structures, the name of the given `GraceEnumeration` or `GraceStructure`.
     ///   - isArray: If `true`, the variable created will be an array.
     ///   - defaultValue: The default value for the `GraceVariable`.
-    public init(parent: GraceInstruction? = nil, name: String, type: GraceVariable.VariableType, subtypeName: String = "", isArray: Bool = false, defaultValue: GraceExpression? = nil) {
+    ///   - exe: The parent exe.
+    public init(exe:GraceExecutable, parent: GraceInstruction? = nil, name: String, type: GraceVariable.VariableType, subtypeName: String = "", isArray: Bool = false, defaultValue: GraceExpression? = nil) {
         self.parent = parent
         self.name = name
         self.type = type
         self.subtypeName = subtypeName
         self.isArray = isArray
         self.defaultValue = defaultValue
+        self.coreExe = exe
     }
     
     // MARK: - Functions
@@ -118,7 +123,7 @@ open class GraceVarInstruction:GraceInstruction {
         // Store variable in parent
         parent.variables[name] = variable
         
-        GraceRuntime.shared.logTracerEvent(message: "Created variable `\(name)` in `\(GraceRuntime.inspect(parent))`.")
+        GraceRuntime.shared.logTracerEvent(type: .variableExe, message: "Created variable `\(String(describing: coreExe?.namespace)):\(name)` in `\(GraceRuntime.inspect(parent))`.")
         
         return variable
     }

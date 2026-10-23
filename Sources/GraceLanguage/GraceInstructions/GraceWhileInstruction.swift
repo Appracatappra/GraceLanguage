@@ -46,6 +46,9 @@ open class GraceWhileInstruction:GraceInstruction, GraceAbortable {
     /// A `GraceVariable` holding the result to return to the caller.
     public var returnResult: GraceVariable? = nil
     
+    /// Provides access to the executable where this object if defined.
+    public weak var coreExe:GraceExecutable? = nil
+    
     // MARK: - Initializers
     /// Creates a new instance.
     public init() {
@@ -56,9 +59,11 @@ open class GraceWhileInstruction:GraceInstruction, GraceAbortable {
     /// - Parameters:
     ///   - parent: The parent `GraceInstruction` for this instruction.
     ///   - whileExpression: The expression to evaluate. If `true` the loop will continue.
-    public init(parent: GraceInstruction? = nil, whileExpression: GraceExpression? = nil) {
+    ///   - exe: The parent exe.
+    public init(exe:GraceExecutable, parent: GraceInstruction? = nil, whileExpression: GraceExpression? = nil) {
         self.parent = parent
         self.whileExpression = whileExpression
+        self.coreExe = exe
     }
     
     // MARK: - Functions
@@ -68,7 +73,7 @@ open class GraceWhileInstruction:GraceInstruction, GraceAbortable {
         var loop:Bool = true
         
         repeat {
-            GraceRuntime.shared.logTracerEvent(message: "Looping over while...")
+            GraceRuntime.shared.logTracerEvent(type: .loopExe, message: "Looping over `\(String(describing: coreExe?.namespace)):while`...")
             
             if let value = try whileExpression?.evaluate() {
                 loop = value.bool

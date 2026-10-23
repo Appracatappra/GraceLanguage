@@ -23,6 +23,9 @@ open class GraceArrayExpression:GraceExpression {
     /// The list of elements for the array.
     public var elements:[GraceExpression] = []
     
+    /// Provides access to the executable where this object if defined.
+    public weak var coreExe:GraceExecutable? = nil
+    
     // MARK: - Initializers
     /// Creates a new instance.
     public init() {
@@ -31,8 +34,10 @@ open class GraceArrayExpression:GraceExpression {
     
     /// Creates a new instance.
     /// - Parameter elements: The list of elements for the array.
-    public init(elements: [GraceExpression]) {
+    /// - Parameter exe: The parent exe.
+    public init(exe:GraceExecutable, elements: [GraceExpression]) {
         self.elements = elements
+        self.coreExe = exe
     }
     
     // MARK: - Functions
@@ -41,8 +46,6 @@ open class GraceArrayExpression:GraceExpression {
     public func evaluate() throws -> GraceVariable? {
         let array:GraceVariable = GraceVariable()
         
-        GraceRuntime.shared.logTracerEvent(message: "Evaluating an array with \(elements.count) elements.")
-        
         array.rawValue = []
         for element in elements {
             if let value = try element.evaluate() {
@@ -50,6 +53,8 @@ open class GraceArrayExpression:GraceExpression {
                 array.append(value.string)
             }
         }
+        
+        GraceRuntime.shared.logTracerEvent(type: .arrayExe, message: "Evaluating `\(String(describing: coreExe?.namespace)):Array` = \(array.rawValue).")
         
         return array
     }

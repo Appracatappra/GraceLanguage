@@ -55,7 +55,7 @@ open class GraceCompiler {
     ///   - returnType: The return type for the function.
     ///   - function: The body of the function to register.
     public func register(name:String, parameterNames:[String] = [], parameterTypes:[GraceVariable.VariableType] = [], returnType:GraceVariable.VariableType = .void, function:@escaping GraceFunction.ExternalFunction) {
-        let function = GraceFunction(name: name, parameterNames: parameterNames, parameterTypes: parameterTypes, returnType: returnType, externalFunction: function)
+        let function = GraceFunction(exe:nil, name: name, parameterNames: parameterNames, parameterTypes: parameterTypes, returnType: returnType, externalFunction: function)
         externalFunctions[name] = function
     }
     
@@ -171,7 +171,7 @@ open class GraceCompiler {
                 executable.enumerations[name] = enumeration
             case .structureKey:
                 let name = tokenizer.pop().value
-                let container = GraceContainer(name: name)
+                let container = GraceContainer(exe: executable, name: name)
                 
                 let (names, types) = try compileParameterDefineList(tokenizer: tokenizer, executable: executable, forFunction: false)
                 container.propertyNames = names
@@ -179,7 +179,7 @@ open class GraceCompiler {
                 
                 executable.containers[name] = container
             case .mainKey:
-                let mainFunction = GraceFunction(name: "main")
+                let mainFunction = GraceFunction(exe: executable, name: "main")
                 mainFunction.parent = executable
                 pushFunction(mainFunction, into: executable)
                 
@@ -187,7 +187,7 @@ open class GraceCompiler {
                 
                 popFunction()
             case .functionKey:
-                let function = GraceFunction(name: tokenizer.pop().value)
+                let function = GraceFunction(exe:executable, name: tokenizer.pop().value)
                 function.parent = executable
                 pushFunction(function, into: executable)
                 
@@ -709,21 +709,21 @@ open class GraceCompiler {
         case .emptyStringKey:
             return GraceConstantExpression()
         case .trueKey:
-            return GraceConstantExpression(value: "true")
+            return GraceConstantExpression(exe: executable, value: "true")
         case .falseKey:
-            return GraceConstantExpression(value: "false")
+            return GraceConstantExpression(exe: executable, value: "false")
         case .nullKey:
-            return GraceConstantExpression(value: "null")
+            return GraceConstantExpression(exe: executable, value: "null")
         case .voidKey:
-            return GraceConstantExpression(value: "void")
+            return GraceConstantExpression(exe: executable, value: "void")
         case .minus:
             // Assume negated constant numerical espression.
             let element = tokenizer.pop()
-            return GraceConstantExpression(value: "-\(element.value)")
+            return GraceConstantExpression(exe: executable, value: "-\(element.value)")
         default:
             // Assume constant
             let element = tokenizer.pop()
-            return GraceConstantExpression(value: element.value)
+            return GraceConstantExpression(exe: executable, value: element.value)
         }
     }
     

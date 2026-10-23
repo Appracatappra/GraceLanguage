@@ -57,6 +57,9 @@ open class GraceContainer {
     /// A list of property types.
     public var PropertyTypes:[GraceVariable.VariableType] = []
     
+    /// Provides access to the executable where this object if defined.
+    public weak var coreExe:GraceExecutable? = nil
+    
     // MARK: - Initializers
     /// Creates a new instance.
     public init() {
@@ -68,10 +71,12 @@ open class GraceContainer {
     ///   - name: The name of the structure.
     ///   - propertyNames: A list of property names.
     ///   - types: A list of property types.
-    public init(name: String, propertyNames: [String] = [], types: [GraceVariable.VariableType] = []) {
+    ///   - exe: The parent exe.
+    public init(exe:GraceExecutable, name: String, propertyNames: [String] = [], types: [GraceVariable.VariableType] = []) {
         self.name = name
         self.propertyNames = propertyNames
         self.PropertyTypes = types
+        self.coreExe = exe
     }
     
     // MARK: - Functions

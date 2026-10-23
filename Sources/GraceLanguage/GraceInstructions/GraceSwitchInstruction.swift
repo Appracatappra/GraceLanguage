@@ -57,6 +57,9 @@ open class GraceSwitchInstruction:GraceInstruction, GraceAbortable {
     /// A `GraceVariable` that holds the value to return to the caller.
     public var returnResult: GraceVariable? = nil
     
+    /// Provides access to the executable where this object if defined.
+    public weak var coreExe:GraceExecutable? = nil
+    
     // MARK: - Initializers
     /// Creates a new instance.
     public init() {
@@ -68,10 +71,11 @@ open class GraceSwitchInstruction:GraceInstruction, GraceAbortable {
     ///   - parent: The parent `GraceInstruction` this instruction belongs to.
     ///   - testExpression: The condition being tested.
     ///   - defaultCase: The defaults `GraceInstrucctions` that will be executed if no condition is met.
-    public init(parent: GraceInstruction? = nil, testExpression: GraceExpression? = nil, defaultCase: GraceCaseStatement? = nil) {
+    public init(exe:GraceExecutable, parent: GraceInstruction? = nil, testExpression: GraceExpression? = nil, defaultCase: GraceCaseStatement? = nil) {
         self.parent = parent
         self.testExpression = testExpression
         self.defaultCase = defaultCase
+        self.coreExe = exe
     }
     
     // MARK: - Functions
@@ -83,7 +87,7 @@ open class GraceSwitchInstruction:GraceInstruction, GraceAbortable {
             throw GraceRuntimeError.formulaError(message: "Unable to evaluate an expression for a Switch statement.")
         }
         
-        GraceRuntime.shared.logTracerEvent(message: "Evaluating switch statment.")
+        GraceRuntime.shared.logTracerEvent(type: .conditionExe, message: "Evaluating `\(String(describing: coreExe?.namespace)):switch` statment.")
         
         for item in cases {
             if let value = try item.textExpression?.evaluate() {

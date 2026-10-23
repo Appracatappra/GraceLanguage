@@ -23,6 +23,9 @@ open class GraceConstantExpression:GraceExpression {
     /// Holds the constant value.
     public var value:String = ""
     
+    /// Provides access to the executable where this object if defined.
+    public weak var coreExe:GraceExecutable? = nil
+    
     // MARK: - Initializers
     /// Creates a new instance.
     public init() {
@@ -31,8 +34,10 @@ open class GraceConstantExpression:GraceExpression {
     
     /// Creates a new instance.
     /// - Parameter value: The constant value,
-    public init(value: String) {
+    /// - Parameter exe: The parent exe.
+    public init(exe:GraceExecutable, value: String) {
         self.value = value
+        self.coreExe = exe
     }
     
     // MARK: - Functions
@@ -40,7 +45,7 @@ open class GraceConstantExpression:GraceExpression {
     /// - Returns: Returns the constant value.
     public func evaluate() throws -> GraceVariable? {
         
-        GraceRuntime.shared.logTracerEvent(message: "Setting constant value `\(value)`")
+        GraceRuntime.shared.logTracerEvent(type: .constantExe, message: "Setting `\(String(describing: coreExe?.namespace)):Constant` = `\(value)`")
         
         return GraceVariable(name: "constant", value: value)
     }

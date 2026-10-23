@@ -34,6 +34,9 @@ open class GraceEnumerationExpression:GraceExpression {
     /// The name of the `GraceEnumeration` property that is being returned.
     public var propertyName:String = ""
     
+    /// Provides access to the executable where this object if defined.
+    public weak var coreExe:GraceExecutable? = nil
+    
     // MARK: - Initializers
     /// Creates an instance.
     public init() {
@@ -45,10 +48,12 @@ open class GraceEnumerationExpression:GraceExpression {
     ///   - executable: The `GraceExecutable`  that this enumeration belongs to.
     ///   - enumerationName: The name of the `GraceEnumeration` to dereference.
     ///   - propertyName: The name of the `GraceEnumeration` property that is being returned.
-    public init(executable:GraceExecutable? = nil, enumerationName: String, propertyName: String) {
+    ///   - exe: The parent exe.
+    public init(exe:GraceExecutable, executable:GraceExecutable? = nil, enumerationName: String, propertyName: String) {
         self.executable = executable
         self.enumerationName = enumerationName
         self.propertyName = propertyName
+        self.coreExe = exe
     }
     
     // MARK: - Functions
@@ -62,7 +67,7 @@ open class GraceEnumerationExpression:GraceExpression {
         
         let enumeration = try GraceRuntime.getEnumeration(name: enumerationName, from: executable)
         
-        GraceRuntime.shared.logTracerEvent(message: "Getting property `\(propertyName)` from enumeration `\(enumerationName)`.")
+        GraceRuntime.shared.logTracerEvent(type: .enumExe, message: "Getting property `\(propertyName)` from enumeration `\(enumerationName)`.")
         
         if enumeration.hasProperty(propertyName) {
             return GraceVariable(name: "result", value: propertyName, type: .enumeration)

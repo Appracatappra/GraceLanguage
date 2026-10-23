@@ -50,6 +50,9 @@ open class GraceIfInstruction:GraceInstruction, GraceAbortable {
     /// A `GraceVariable` holding the value to return to the caller.
     public var returnResult: GraceVariable? = nil
     
+    /// Provides access to the executable where this object if defined.
+    public weak var coreExe:GraceExecutable? = nil
+    
     // MARK: - Initilaizers
     /// Creates a new instance.
     public init() {
@@ -81,7 +84,7 @@ open class GraceIfInstruction:GraceInstruction, GraceAbortable {
         shouldAbort = false
         returnResult = nil
         if value.bool {
-            GraceRuntime.shared.logTracerEvent(message: "Executing `true` branch of if...then.")
+            GraceRuntime.shared.logTracerEvent(type: .conditionExe, message: "Executing `true` branch of `\(String(describing: coreExe?.namespace)):if...then`.")
             
             for instruction in trueInstructions {
                 try instruction.execute()
@@ -90,7 +93,7 @@ open class GraceIfInstruction:GraceInstruction, GraceAbortable {
                 }
             }
         } else {
-            GraceRuntime.shared.logTracerEvent(message: "Executing `false` branch of if...then.")
+            GraceRuntime.shared.logTracerEvent(type: .conditionExe, message: "Executing `false` branch of `\(String(describing: coreExe?.namespace)):if...then`.")
             
             for instruction in falseInstructions {
                 try instruction.execute()

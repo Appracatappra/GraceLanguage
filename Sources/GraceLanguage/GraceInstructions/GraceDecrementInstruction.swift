@@ -30,6 +30,9 @@ open class GraceDecrementInstruction:GraceInstruction {
     /// The name of the `GraceVariable` to decrement.
     public var variableName:String = ""
     
+    /// Provides access to the executable where this object if defined.
+    public weak var coreExe:GraceExecutable? = nil
+    
     // MARK: - Initializers
     /// Creates a new instance.
     public init() {
@@ -40,9 +43,11 @@ open class GraceDecrementInstruction:GraceInstruction {
     /// - Parameters:
     ///   - parent: The parent `GraceInstruction` this instruction belongs to.
     ///   - variableName: The name of the `GraceVariable` to decrement.
-    public init(parent: GraceInstruction? = nil, variableName: String) {
+    ///   - exe: The parent exe.
+    public init(exe:GraceExecutable, parent: GraceInstruction? = nil, variableName: String) {
         self.parent = parent
         self.variableName = variableName
+        self.coreExe = exe
     }
     
     // MARK: - Functions
@@ -60,7 +65,7 @@ open class GraceDecrementInstruction:GraceInstruction {
         
         variable.int = variable.int - 1
         
-        GraceRuntime.shared.logTracerEvent(message: "Decrementing `\(variableName)` = \(variable.rawValue).")
+        GraceRuntime.shared.logTracerEvent(type: .variableExe, message: "Decrementing `\(String(describing: coreExe?.namespace)):\(variableName)` = \(variable.rawValue).")
         
         return nil
     }

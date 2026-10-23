@@ -41,6 +41,9 @@ open class GraceCallInstruction:GraceInstruction {
     /// A list of values to pass to the function.
     public var parameters:[GraceExpression] = []
     
+    /// Provides access to the executable where this object if defined.
+    public weak var coreExe:GraceExecutable? = nil
+    
     // MARK: - Initializers
     /// Creates a new instance.
     public init() {
@@ -53,11 +56,12 @@ open class GraceCallInstruction:GraceInstruction {
     ///   - parent: The parent `GraceInstruction` that this instruction belongs to.
     ///   - functionName: The name of the `GraceFunction` to call.
     ///   - parameters: A list of values to pass to the function.
-    public init(executable: GraceExecutable? = nil, parent: GraceInstruction? = nil, functionName: String, parameters: [GraceExpression] = []) {
+    public init(exe:GraceExecutable, executable: GraceExecutable? = nil, parent: GraceInstruction? = nil, functionName: String, parameters: [GraceExpression] = []) {
         self.executable = executable
         self.parent = parent
         self.functionName = functionName
         self.parameters = parameters
+        self.coreExe = exe
     }
     
     // MARK: - Functions
@@ -66,7 +70,7 @@ open class GraceCallInstruction:GraceInstruction {
     public func execute() throws -> GraceVariable? {
         let function = try GraceRuntime.getFunction(name: functionName, from: executable)
         
-        GraceRuntime.shared.logTracerEvent(message: "Calling function `\(functionName)`.")
+        GraceRuntime.shared.logTracerEvent(type: .callExe, message: "Calling function `\(String(describing: coreExe?.namespace)):\(functionName)`.")
         
         // Assign parameters to function
         for n in 0..<function.parameterNames.count {

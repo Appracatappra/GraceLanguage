@@ -48,6 +48,9 @@ open class GraceIterateInstruction:GraceInstruction, GraceAbortable {
     /// A `GraceVariable` holding the result that will be returned to the caller.
     public var returnResult: GraceVariable? = nil
     
+    /// Provides access to the executable where this object if defined.
+    public weak var coreExe:GraceExecutable? = nil
+    
     // MARK: - Initializers
     /// Creates a new instance.
     public init() {
@@ -59,10 +62,11 @@ open class GraceIterateInstruction:GraceInstruction, GraceAbortable {
     ///   - parent: The parent `GraceInstruction` this instruction belongs to.
     ///   - iteratorName: The name of the new `GraceVariable` that will be loaded with the current item.
     ///   - variableName: The name of the `GraceArray` to iterate over.
-    public init(parent: GraceInstruction? = nil, iteratorName: String, variableName: String) {
+    public init(exe:GraceExecutable, parent: GraceInstruction? = nil, iteratorName: String, variableName: String) {
         self.parent = parent
         self.iteratorName = iteratorName
         self.variableName = variableName
+        self.coreExe = exe
     }
     
     // MARK: - Functions
@@ -84,7 +88,7 @@ open class GraceIterateInstruction:GraceInstruction, GraceAbortable {
             for value in variable.rawValue {
                 iterator.rawValue = [value]
                 
-                GraceRuntime.shared.logTracerEvent(message: "Iterating loop on `\(value)`.")
+                GraceRuntime.shared.logTracerEvent(type: .loopExe, message: "Iterating loop on `\(String(describing: coreExe?.namespace)):\(value)`.")
                 
                 for instruction in instructions {
                     try instruction.execute()

@@ -29,13 +29,22 @@ open class GraceNotExpression:GraceExpression {
     // MARK: - Properties
     public var operand:GraceExpression? = nil
     
+    /// Provides access to the executable where this object if defined.
+    public weak var coreExe:GraceExecutable? = nil
+    
     // MARK: - Initializers
+    /// Creates a new instance.
     public init() {
         
     }
     
-    public init(operand: GraceExpression? = nil) {
+    /// Creates a new instance.
+    /// - Parameters:
+    ///   - exe: The parent exe.
+    ///   - operand: The operand.
+    public init(exe:GraceExecutable, operand: GraceExpression? = nil) {
         self.operand = operand
+        self.coreExe = exe
     }
     
     // MARK: - Functions
@@ -45,7 +54,7 @@ open class GraceNotExpression:GraceExpression {
             throw GraceRuntimeError.formulaError(message: "Missing operand for NOT expression.")
         }
         
-        GraceRuntime.shared.logTracerEvent(message: "Negating a boolean.")
+        GraceRuntime.shared.logTracerEvent(type: .notExe, message: "Negating a boolean.")
         
         switch value.type {
         case .bool:

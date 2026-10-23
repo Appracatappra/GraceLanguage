@@ -46,6 +46,9 @@ open class GraceRepeatInstruction:GraceInstruction, GraceAbortable {
     /// A`GraceVariable` holding the value to return to the caller.
     public var returnResult: GraceVariable? = nil
     
+    /// Provides access to the executable where this object if defined.
+    public weak var coreExe:GraceExecutable? = nil
+    
     // MARK: - Initializers
     /// Creates a new instance.
     public init() {
@@ -56,9 +59,11 @@ open class GraceRepeatInstruction:GraceInstruction, GraceAbortable {
     /// - Parameters:
     ///   - parent: The parent `GraceInstruction` that this instruction belongs to.
     ///   - untilExpression: The condition that must be met to end the loop.
-    public init(parent: GraceInstruction? = nil, untilExpression: GraceExpression? = nil) {
+    ///   - exe: The parent exe.
+    public init(exe:GraceExecutable, parent: GraceInstruction? = nil, untilExpression: GraceExpression? = nil) {
         self.parent = parent
         self.untilExpression = untilExpression
+        self.coreExe = exe
     }
     
     // MARK: - Functions
@@ -71,7 +76,7 @@ open class GraceRepeatInstruction:GraceInstruction, GraceAbortable {
             shouldAbort = false
             returnResult = nil
             
-            GraceRuntime.shared.logTracerEvent(message: "Repeating loop...")
+            GraceRuntime.shared.logTracerEvent(type: .loopExe, message: "Repeating `\(String(describing: coreExe?.namespace))` loop...")
             
             for instruction in instructions {
                 try instruction.execute()

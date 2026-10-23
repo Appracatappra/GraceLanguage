@@ -35,6 +35,9 @@ open class GraceVariableExpression:GraceExpression {
     /// For an array, this will contain the index of the element in the array to dereference.
     public var indexExpression:GraceExpression? = nil
     
+    /// Provides access to the executable where this object if defined.
+    public weak var coreExe:GraceExecutable? = nil
+    
     // MARK: - Initializers
     /// Creates a new instance.
     public init() {
@@ -47,11 +50,13 @@ open class GraceVariableExpression:GraceExpression {
     ///   - variableName: The name the of `GraceVariable` to return.
     ///   - propertyName: The options name of a sub property such as an element from a `GraceEnumeration` or a property of a `GraceStructure`.
     ///   - index: For an array, this will contain the index of the element in the array to dereference.
-    public init(parent: GraceInstruction? = nil, variableName: String, propertyName: String = "", index: GraceExpression? = nil) {
+    ///   - exe: The parent exe.
+    public init(exe:GraceExecutable, parent: GraceInstruction? = nil, variableName: String, propertyName: String = "", index: GraceExpression? = nil) {
         self.parent = parent
         self.variableName = variableName
         self.propertyName = propertyName
         self.indexExpression = index
+        self.coreExe = exe
     }
     
     // MARK: - Functions
@@ -61,7 +66,7 @@ open class GraceVariableExpression:GraceExpression {
         var variable:GraceVariable? = nil
         var index:Int = -1
         
-        GraceRuntime.shared.logTracerEvent(message: "Evaluating variable expression `\(variableName)`.")
+        GraceRuntime.shared.logTracerEvent(type: .variableExe, message: "Evaluating variable expression `\(String(describing: coreExe?.namespace)):\(variableName)`.")
         
         if let parent {
             variable = GraceRuntime.getVariable(name: variableName, from: parent)
@@ -93,7 +98,7 @@ open class GraceVariableExpression:GraceExpression {
                 }
             }
             
-            GraceRuntime.shared.logTracerEvent(message: "Variable `\(variableName)` resolved to `\(variable.rawValue)`.")
+            GraceRuntime.shared.logTracerEvent(type: .variableExe, message: "Variable `\(String(describing: coreExe?.namespace)):\(variableName)` resolved to `\(variable.rawValue)`.")
         } else {
             throw GraceRuntimeError.unknownVariable(message: "Variable `\(variableName)` not found.")
         }

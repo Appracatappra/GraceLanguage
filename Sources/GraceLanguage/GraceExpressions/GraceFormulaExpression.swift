@@ -35,6 +35,9 @@ open class GraceFormulaExpression:GraceExpression {
     /// The right side of the operation.
     public var rightOperand:GraceExpression? = nil
     
+    /// Provides access to the executable where this object if defined.
+    public weak var coreExe:GraceExecutable? = nil
+    
     // MARK: - Initializer
     /// Creates a new instance.
     public init() {
@@ -46,10 +49,12 @@ open class GraceFormulaExpression:GraceExpression {
     ///   - leftOperand: The left side of the operation.
     ///   - operation: The math operation to perform or the boolean comparision to make.
     ///   - rightOperand: The right side of the operation.
-    public init(leftOperand: GraceExpression? = nil, operation: String, rightOperand: GraceExpression? = nil) {
+    ///   - exe: The parent exe.
+    public init(exe:GraceExecutable, leftOperand: GraceExpression? = nil, operation: String, rightOperand: GraceExpression? = nil) {
         self.leftOperand = leftOperand
         self.operation = operation
         self.rightOperand = rightOperand
+        self.coreExe = exe
     }
     
     // MARK: - Functions
@@ -76,7 +81,7 @@ open class GraceFormulaExpression:GraceExpression {
         // Get operation key
         let op = GraceKeyword.get(fromString: operation)
         
-        GraceRuntime.shared.logTracerEvent(message: "Evaluating formula `\(leftValue.string) \(String(describing: op)) \(rightValue.string)`.")
+        GraceRuntime.shared.logTracerEvent(type: .formulaExe, message: "Evaluating formula `\(leftValue.string) \(String(describing: op)) \(rightValue.string)`.")
         
         // Take action based on the left side type
         switch leftValue.type {

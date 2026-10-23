@@ -46,6 +46,22 @@ open class GraceExecutable:GraceInstruction, GraceAbortable {
     /// A `GraceVariable` holding the results to return to the caller.
     public var returnResult: GraceVariable? = nil
     
+    // MARK: - Computed Properties
+    /// The core executable for this executable.
+    public var coreExe: GraceExecutable? {
+        get {return base}
+        set {base = newValue}
+    }
+    
+    /// Returns a path to this executable through the chain of executables.
+    var exePath:String {
+        var path = "Exe://"
+        
+        path += pathCrawler(baseExe: self)
+        
+        return path
+    }
+    
     // MARK: - Initializers
     /// Creates a new instance.
     public init() {
@@ -68,6 +84,27 @@ open class GraceExecutable:GraceInstruction, GraceAbortable {
     }
     
     // MARK: - Functions
+    /// Crawls the chain of Grace Executables building a path for the chain.
+    /// - Parameter baseExe: The starting exe.
+    /// - Returns: Returns the chain paht.
+    func pathCrawler(baseExe:GraceExecutable) -> String {
+        var path = ""
+        let name = (baseExe.namespace.isEmpty) ? "Unknown" : baseExe.namespace
+        
+        // Has Parent?
+        if let exe = baseExe.base {
+            path = pathCrawler(baseExe: exe)
+        }
+        
+        if path.isEmpty {
+            path = name
+        } else {
+            path += ":\(name)"
+        }
+        
+        return path
+    }
+    
     /// Registers an External Function with this `GraceExecutable`.
     /// - Parameters:
     ///   - name: The name of the function.
@@ -76,7 +113,7 @@ open class GraceExecutable:GraceInstruction, GraceAbortable {
     ///   - returnType: The return type for the function.
     ///   - function: The body of the function to register.
     public func register(name:String, parameterNames:[String] = [], parameterTypes:[GraceVariable.VariableType] = [], returnType:GraceVariable.VariableType = .void, function:@escaping GraceFunction.ExternalFunction) {
-        let function = GraceFunction(name: name, parameterNames: parameterNames, parameterTypes: parameterTypes, returnType: returnType, externalFunction: function)
+        let function = GraceFunction(exe: nil, name: name, parameterNames: parameterNames, parameterTypes: parameterTypes, returnType: returnType, externalFunction: function)
         functions[name] = function
     }
     
@@ -96,7 +133,7 @@ open class GraceExecutable:GraceInstruction, GraceAbortable {
         
         // Needs execution?
         if needsExecution {
-            GraceRuntime.shared.logTracerEvent(message: "Executing global instructions on Exe `\(namespace)`.")
+            GraceRuntime.shared.logTracerEvent(type: .globalInstruction, message: "Executing global instructions on Exe `\(namespace)`.")
             
             // Process all instructions.
             for instruction in instructions {
@@ -109,7 +146,7 @@ open class GraceExecutable:GraceInstruction, GraceAbortable {
             // Clear the execution flag.
             needsExecution = false
         } else {
-            GraceRuntime.shared.logTracerEvent(message: "Skipping global instructions on Exe `\(namespace)`.")
+            GraceRuntime.shared.logTracerEvent(type: .globalInstruction, message: "Global instructions on Exe `\(namespace)` have already been run, skipping.")
         }
         
         // Execute the instructions on the any attached base as well

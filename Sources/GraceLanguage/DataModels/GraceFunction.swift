@@ -45,6 +45,9 @@ open class GraceFunction:GraceInstruction, GraceAbortable {
     /// A `GraceVariable` that holds the value returned to the caller.
     public var returnResult: GraceVariable? = nil
     
+    /// Provides access to the executable where this object if defined.
+    public weak var coreExe:GraceExecutable? = nil
+    
     // MARK: - Initializers
     /// Creates a new instance.
     public init() {
@@ -59,13 +62,15 @@ open class GraceFunction:GraceInstruction, GraceAbortable {
     ///   - parameterTypes: A list of parameter types.
     ///   - returnType: Defines the return type for the function.
     ///   - externalFunction: Holds the definition of an external function.
-    public init(parent: GraceInstruction? = nil, name: String, parameterNames: [String] = [], parameterTypes: [GraceVariable.VariableType] = [], returnType: GraceVariable.VariableType = .void, externalFunction: ExternalFunction? = nil) {
+    ///   - exe: The parent executable.
+    public init(exe:GraceExecutable?, parent: GraceInstruction? = nil, name: String, parameterNames: [String] = [], parameterTypes: [GraceVariable.VariableType] = [], returnType: GraceVariable.VariableType = .void, externalFunction: ExternalFunction? = nil) {
         self.parent = parent
         self.name = name
         self.parameterNames = parameterNames
         self.parameterTypes = parameterTypes
         self.externalFunction = externalFunction
         self.returnType = returnType
+        self.coreExe = exe
     }
     
     /// Creates a new instance.
@@ -77,7 +82,7 @@ open class GraceFunction:GraceInstruction, GraceAbortable {
     ///   - instructions: The list of instruction to execute.
     ///   - externalFunction: Holds the definition of an external function.
     ///   - returnType: The return type.
-    public init(parent: GraceInstruction? = nil, name: String, parameterNames: [String], parameterTypes: [GraceVariable.VariableType], instructions: [GraceInstruction], externalFunction: ExternalFunction? = nil, returnType: GraceVariable.VariableType) {
+    public init(exe:GraceExecutable?, parent: GraceInstruction? = nil, name: String, parameterNames: [String], parameterTypes: [GraceVariable.VariableType], instructions: [GraceInstruction], externalFunction: ExternalFunction? = nil, returnType: GraceVariable.VariableType) {
         self.parent = parent
         self.name = name
         self.parameterNames = parameterNames
@@ -85,6 +90,7 @@ open class GraceFunction:GraceInstruction, GraceAbortable {
         self.instructions = instructions
         self.externalFunction = externalFunction
         self.returnType = returnType
+        self.coreExe = exe
     }
     
     // MARK: - Functions
@@ -93,13 +99,13 @@ open class GraceFunction:GraceInstruction, GraceAbortable {
     public func execute() throws -> GraceVariable? {
         
         if let externalFunction {
-            GraceRuntime.shared.logTracerEvent(message: "Executing external function `\(name)`.")
+            GraceRuntime.shared.logTracerEvent(type: .functionExe, message: "Executing external function `\(name)`.")
             return externalFunction(variables)
         } else {
             shouldAbort = false
             returnResult = nil
             
-            GraceRuntime.shared.logTracerEvent(message: "Executing function `\(name)`.")
+            GraceRuntime.shared.logTracerEvent(type: .functionExe, message: "Executing function `\(String(describing: coreExe?.namespace)):\(name)`.")
             
             for instruction in instructions {
                 try instruction.execute()

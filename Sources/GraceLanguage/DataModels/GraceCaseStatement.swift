@@ -19,6 +19,9 @@ open class GraceCaseStatement {
     /// The list of `GraceInstructions`.
     public var instructions:[GraceInstruction] = []
     
+    /// Provides access to the executable where this object if defined.
+    public weak var coreExe:GraceExecutable? = nil
+    
     // MARK: - Initializers
     /// Creates a new instance.
     public init() {
@@ -29,7 +32,9 @@ open class GraceCaseStatement {
     /// - Parameters:
     ///   - textExpression: The condition to be met.
     ///   - instructions: The list of `GraceInstructions`.
-    public init(textExpression: GraceExpression? = nil, instructions: [GraceInstruction] = []) {
+    ///   - exe: The parent exe for this object.
+    public init(exe:GraceExecutable, textExpression: GraceExpression? = nil, instructions: [GraceInstruction] = []) {
+        self.coreExe = exe
         self.textExpression = textExpression
         self.instructions = instructions
     }

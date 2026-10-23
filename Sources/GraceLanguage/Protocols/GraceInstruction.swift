@@ -16,6 +16,9 @@ public protocol GraceInstruction {
     /// A list of `GraceVaraibles`.
     var variables:GraceContainer.GraceStructure { get set }
     
+    /// Provides access to the executable where this object if defined.
+    var coreExe:GraceExecutable? { get set }
+    
     /// Executes the `GraceInstruction`.
     /// - Returns: The result of the execution.
     @discardableResult func execute() throws -> GraceVariable?

@@ -38,6 +38,9 @@ open class GraceReturnInstruction:GraceInstruction {
     /// The value to return to the caller.
     public var expression:GraceExpression? = nil
     
+    /// Provides access to the executable where this object if defined.
+    public weak var coreExe:GraceExecutable? = nil
+    
     // MARK: - Initializers
     /// Creates a new instance.
     public init() {
@@ -48,9 +51,10 @@ open class GraceReturnInstruction:GraceInstruction {
     /// - Parameters:
     ///   - parent: The parent `GraceInstruction` that this instruction belongs to.
     ///   - expression: The value to return to the caller.
-    public init(parent: GraceInstruction? = nil, expression: GraceExpression? = nil) {
+    public init(exe:GraceExecutable, parent: GraceInstruction? = nil, expression: GraceExpression? = nil) {
         self.parent = parent
         self.expression = expression
+        self.coreExe = exe
     }
     
     // MARK: - Functions
@@ -67,7 +71,7 @@ open class GraceReturnInstruction:GraceInstruction {
             }
         }
         
-        GraceRuntime.shared.logTracerEvent(message: "Returning result `\(String(describing: value))`.")
+        GraceRuntime.shared.logTracerEvent(type: .returnExe, message: "Returning result `\(String(describing: coreExe?.namespace)):\(String(describing: value))`.")
         
         if let parent {
             bubbleUpAbort(for: parent, value: value)

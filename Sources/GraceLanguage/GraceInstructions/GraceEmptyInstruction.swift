@@ -31,6 +31,9 @@ open class GraceEmptyInstruction:GraceInstruction {
     /// The name of the `GraceArray` to empty.
     public var variableName:String = ""
     
+    /// Provides access to the executable where this object if defined.
+    public weak var coreExe:GraceExecutable? = nil
+    
     // MARK: - Initializers
     /// Creates a new instance.
     public init() {
@@ -41,9 +44,10 @@ open class GraceEmptyInstruction:GraceInstruction {
     /// - Parameters:
     ///   - parent: The parent `GraceInstruction` this instruction belongs to.
     ///   - variableName: The name of the `GraceArray` to empty.
-    public init(parent: GraceInstruction? = nil, variableName: String) {
+    public init(exe:GraceExecutable, parent: GraceInstruction? = nil, variableName: String) {
         self.parent = parent
         self.variableName = variableName
+        self.coreExe = exe
     }
     
     // MARK: - Functions
@@ -52,7 +56,7 @@ open class GraceEmptyInstruction:GraceInstruction {
     public func execute() throws -> GraceVariable? {
         var variable:GraceVariable? = nil
         
-        GraceRuntime.shared.logTracerEvent(message: "Erasing array `\(variableName)`.")
+        GraceRuntime.shared.logTracerEvent(type: .arrayExe, message: "Erasing array `\(String(describing: coreExe?.namespace)):\(variableName)`.")
         
         if let parent {
             variable = GraceRuntime.getVariable(name: variableName, from: parent)

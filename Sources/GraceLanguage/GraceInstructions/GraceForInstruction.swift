@@ -53,6 +53,9 @@ open class GraceForInstruction:GraceInstruction, GraceAbortable {
     /// A `GraceVariable` holding the results to return to the caller.
     public var returnResult: GraceVariable? = nil
     
+    /// Provides access to the executable where this object if defined.
+    public weak var coreExe:GraceExecutable? = nil
+    
     // MARK: - Initializers
     /// Creates a new instance.
     public init() {
@@ -65,11 +68,13 @@ open class GraceForInstruction:GraceInstruction, GraceAbortable {
     ///   - iteratorName: The name of a new `GraceVariable` that will hold the current index.
     ///   - fromExpression: The starting value for the for-loop.
     ///   - toExpression: The ending value for the for-loop.
-    public init(parent: GraceInstruction? = nil, iteratorName: String, fromExpression: GraceExpression? = nil, toExpression: GraceExpression? = nil) {
+    ///   - exe: The parent exe.
+    public init(exe:GraceExecutable, parent: GraceInstruction? = nil, iteratorName: String, fromExpression: GraceExpression? = nil, toExpression: GraceExpression? = nil) {
         self.parent = parent
         self.iteratorName = iteratorName
         self.fromExpression = fromExpression
         self.toExpression = toExpression
+        self.coreExe = exe
     }
     
     // MARK: - Functions
@@ -95,7 +100,7 @@ open class GraceForInstruction:GraceInstruction, GraceAbortable {
         for n in a...b {
             iterator.int = n
             
-            GraceRuntime.shared.logTracerEvent(message: "Executing for...next iteration \(n).")
+            GraceRuntime.shared.logTracerEvent(type: .loopExe, message: "Executing for...next iteration \(n).")
             
             for instruction in instructions {
                 try instruction.execute()

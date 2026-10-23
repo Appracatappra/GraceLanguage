@@ -38,6 +38,9 @@ open class GraceAddInstruction:GraceInstruction {
     /// The options index to insert the new value at.
     public var indexExpression:GraceExpression? = nil
     
+    /// Provides access to the executable where this object if defined.
+    public weak var coreExe:GraceExecutable? = nil
+    
     // MARK: - Initializers
     /// Creates a new instance.
     public init() {
@@ -50,11 +53,13 @@ open class GraceAddInstruction:GraceInstruction {
     ///   - expression: The value to add to the array.
     ///   - variableName: The name of the `GraceArray` to modify.
     ///   - index: The options index to insert the new value at.
-    public init(parent: GraceInstruction? = nil, expression: GraceExpression? = nil, variableName: String, index: GraceExpression? = nil) {
+    ///   - exe: The parent exe.
+    public init(exe:GraceExecutable, parent: GraceInstruction? = nil, expression: GraceExpression? = nil, variableName: String, index: GraceExpression? = nil) {
         self.parent = parent
         self.expression = expression
         self.variableName = variableName
         self.indexExpression = index
+        self.coreExe = exe
     }
     
     // MARK: - Functions
@@ -63,8 +68,6 @@ open class GraceAddInstruction:GraceInstruction {
     public func execute() throws -> GraceVariable? {
         var variable:GraceVariable? = nil
         var index:Int = -1
-        
-        GraceRuntime.shared.logTracerEvent(message: "Evaluating add expression for `\(variableName)`.")
         
         guard let value = try expression?.evaluate() else {
             throw GraceRuntimeError.variableError(message: "Unable to evaluate expression to change variable `\(variableName)`.")
@@ -88,7 +91,7 @@ open class GraceAddInstruction:GraceInstruction {
             }
             variable.isArray = true
             
-            GraceRuntime.shared.logTracerEvent(message: "`\(variableName)` set to `\(variable.rawValue)`.")
+            GraceRuntime.shared.logTracerEvent(type: .arrayExe, message: "Array `\(String(describing: coreExe?.namespace)):\(variableName)` set to `\(variable.rawValue)`.")
         } else {
             throw GraceRuntimeError.unknownVariable(message: "Variable `\(variableName)` not found.")
         }
