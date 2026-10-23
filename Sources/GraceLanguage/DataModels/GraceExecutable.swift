@@ -54,7 +54,7 @@ open class GraceExecutable:GraceInstruction, GraceAbortable {
     }
     
     /// Returns a path to this executable through the chain of executables.
-    var exePath:String {
+    public var exePath:String {
         var path = "Exe://"
         
         path += pathCrawler(baseExe: self)

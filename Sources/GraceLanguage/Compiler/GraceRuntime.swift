@@ -202,6 +202,9 @@ open class GraceRuntime {
     @discardableResult public func run(executable:GraceExecutable) throws -> GraceVariable? {
         var result:GraceVariable? = nil
         
+        // Log start of exe.
+        logTracerEvent(type: .launchExe, message: "Launching \(executable.exePath)")
+        
         // Save the core executable and run any instructions on it.
         result = try executable.execute()
         
@@ -221,6 +224,9 @@ open class GraceRuntime {
         // Compile program
         let executable = try GraceCompiler.shared.compile(program: program)
         
+        // Log start of exe.
+        logTracerEvent(type: .launchExe, message: "Launching \(executable.exePath)")
+        
         // Save the core executable and run any instructions on it.
         result = try executable.execute()
         
@@ -239,6 +245,9 @@ open class GraceRuntime {
     /// - Returns: Returns the results of the execution as a `GraceVariable` or `nil` if nothing is returned.
     @discardableResult public func execute(function:String, against executable:GraceExecutable, with parameters:[GraceVariable] = []) throws -> GraceVariable? {
         var result:GraceVariable? = nil
+        
+        // Log start of exe.
+        logTracerEvent(type: .launchExe, message: "Launching \(executable.exePath)")
         
         // Save the core executable and run any instructions on it.
         result = try executable.execute()

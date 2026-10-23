@@ -12,6 +12,9 @@ public enum GraceDebugTraceType:String, CaseIterable {
     /// A generic log trace.
     case generic
     
+    /// Trace the launch of an exe.
+    case launchExe
+    
     /// Trace locating of variables.
     case variableLocation
     
