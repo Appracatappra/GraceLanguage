@@ -258,6 +258,24 @@ final class GraceLanguageTests: XCTestCase {
         result = try GraceRuntime.shared.execute(function: "ItemC", against: exe)
         
         XCTAssert(result?.string == "Hello World!")
+        
+        let code2 = """
+        import StandardLib;
+        
+        var hello:string = "Hi there";
+        
+        var someVar:string;
+        
+        func OnItemA() returns string {
+            return "Item A+";
+        }
+        """
+        
+        try GraceCompiler.shared.recompile(executable: baseExe, program: code2)
+        
+        result = try GraceRuntime.shared.execute(function: "OnItemA", against: exe)
+        
+        XCTAssert(result?.string == "Item A+")
     }
     
     func testAnyVar() throws {

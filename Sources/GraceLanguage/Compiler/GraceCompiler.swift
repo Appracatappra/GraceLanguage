@@ -104,6 +104,37 @@ open class GraceCompiler {
         return try compileWorkload(executable: executable, tokenizer: tokenizer)
     }
     
+    /// Recompiles the given Grace Script maintaining the same base executable.
+    /// - Parameters:
+    ///   - executable: The executable that we are recompiling into.
+    ///   - program: The text of the script to compile.
+    /// - Remark: This is useful when you need to compile a section of an executable chain, but want to maintain the chain in place without recompiling everything.
+    public func recompile(executable:GraceExecutable, program:String) throws {
+        let tokenizer = GraceTokenizer()
+        
+        // Reset the executable for recompilation
+        executable.reset()
+        
+        // Has a base exe?
+        // We don't want to add these again since the base will include them.
+        if executable.base == nil {
+            // No, safe to copy over.
+            for (key,function) in externalFunctions {
+                executable.functions[key] = function
+            }
+        }
+        
+        // Ensure there is a script.
+        guard !program.isEmpty else {
+            return
+        }
+        
+        try tokenizer.parse(program)
+        functionStack = []
+        
+        try compileWorkload(executable: executable, tokenizer: tokenizer)
+    }
+    
     /// Adds additional code to a Grace Executable from another source file.
     /// - Parameters:
     ///   - executable: The Grace Executable being compiled into.
@@ -129,7 +160,7 @@ open class GraceCompiler {
     ///   - executable: The Grace Executable being compiled into.
     ///   - tokenizer: The tokenizer with the broken down source code.
     /// - Returns: The `GraceExecutable` generated from the input program.
-    private func compileWorkload(executable:GraceExecutable, tokenizer:GraceTokenizer) throws -> GraceExecutable {
+    @discardableResult private func compileWorkload(executable:GraceExecutable, tokenizer:GraceTokenizer) throws -> GraceExecutable {
         
         // Interpret parse queue
         while tokenizer.count > 0 {

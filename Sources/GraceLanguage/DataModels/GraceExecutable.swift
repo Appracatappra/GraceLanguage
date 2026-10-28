@@ -84,6 +84,19 @@ open class GraceExecutable:GraceInstruction, GraceAbortable {
     }
     
     // MARK: - Functions
+    /// Resets the executable to its base, pre-compiled state.
+    public func reset() {
+        self.parent = nil
+        self.variables = [:]
+        self.containers = [:]
+        self.enumerations = [:]
+        self.functions = [:]
+        self.instructions = []
+        self.shouldAbort = false
+        self.needsExecution = true
+        self.returnResult = nil
+    }
+    
     /// Crawls the chain of Grace Executables building a path for the chain.
     /// - Parameter baseExe: The starting exe.
     /// - Returns: Returns the chain paht.
