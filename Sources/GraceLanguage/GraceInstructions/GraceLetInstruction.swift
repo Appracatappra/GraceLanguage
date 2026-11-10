@@ -125,6 +125,17 @@ open class GraceLetInstruction:GraceInstruction {
                 } else {
                     throw GraceRuntimeError.indexOutOfBounds(message: "Index `\(index)` is out of bounds in variable `\(variable.name)`.")
                 }
+            } else if value.rawValue.count > 1 {
+                // Setting an array value, clear existing array.
+                variable.rawValue = []
+                
+                // Clone the values into the array
+                for item in value.rawValue {
+                    variable.rawValue.append(item)
+                }
+                
+                // Ensure the variable gets marked as an array.
+                variable.isArray = true
             } else {
                 variable.string = value.string
             }

@@ -122,7 +122,12 @@ open class GraceVariable {
             }
         }
         set {
-            rawValue[0] = newValue
+            // Handle an empty array
+            if rawValue.count == 0 {
+                rawValue.append(newValue)
+            } else {
+                rawValue[0] = newValue
+            }
         }
     }
     

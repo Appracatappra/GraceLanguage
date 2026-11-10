@@ -20,6 +20,25 @@ final class GraceLanguageTests: XCTestCase {
         XCTAssert(result?.int == 10)
     }
     
+    func testArrayAssign() throws {
+        let code = """
+        import StandardLib;
+        
+        main {
+            var a1:int array = [];
+            var a2:int array = [1,2,3,4,5];
+        
+            let $a1 = $a2;
+        
+            return @count($a1);
+        }
+        """
+        
+        let result = try GraceRuntime.shared.run(program: code)
+        
+        XCTAssert(result?.int == 5)
+    }
+    
     func testMacro() throws {
         let result = try GraceRuntime.shared.expandMacros(in: "The answer is: @intMath(40,'+',2)")
         XCTAssert(result == "The answer is: 42")

@@ -63,7 +63,7 @@ open class GraceEmptyInstruction:GraceInstruction {
         }
         
         if let variable {
-            variable.rawValue = [""]
+            variable.rawValue = []
         } else {
             throw GraceRuntimeError.unknownVariable(message: "Variable `\(variableName)` not found.")
         }
