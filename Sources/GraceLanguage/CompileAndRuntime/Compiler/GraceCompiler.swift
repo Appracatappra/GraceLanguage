@@ -181,6 +181,8 @@ open class GraceCompiler {
                     ImportStringLibrary(to: executable)
                 case "MacroLib":
                     ImportMacroLibrary(to: executable)
+                case "MathLib":
+                    ImportMathLibrary(to: executable)
                 default:
                     throw GraceCompilerError.unknownLibrary(message: "Unknown library '\(library)' in Import call.", row: token.row, col: token.col)
                 }

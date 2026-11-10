@@ -43,12 +43,30 @@ Since, the **Swift Package Manager** is integrated with Xcode 11 (and greater), 
 
 In Grace **Enumerations**, **Structures** and **Functions** are defined in the **Global Space** along with a special function `main` that acts as the main entry point into the program.
 
-Additionally, library **Imports** and **Variables** can be defined in the **Global Space** and they will be available in everywhere throughout the Grace program. The StandardLib contains built-in functions such as `print` and `printf`. StringLib contains string manipulation functions such as `leftString` and `midString`.
+Additionally, library **Imports** and **Variables** can be defined in the **Global Space** and they will be available everywhere throughout the Grace program. The StandardLib contains built-in functions such as `print` and `printf`. StringLib contains string manipulation functions such as `leftString` and `midString`. MathLib contains beginner-friendly mathematical functions such as `squareRoot`, `sine`, and `round`.
+
+## Grace MathLib
+
+Import `MathLib` to use arithmetic, powers, roots, logarithms, trigonometry, rounding, and floating-point utilities:
+
+```swift
+import MathLib;
+
+main {
+    var angle:float = @degreesToRadians(90);
+    var sineValue:float = @sine($angle);
+    var distance:float = @hypotenuse(3, 4);
+    return @round($distance);
+}
+```
+
+MathLib accepts loosely typed values, so integers, floats, and numeric strings can be used as inputs. Invalid conversions default to `0`. Mathematical functions preserve standard values such as `NaN`, positive and negative infinity, and signed zero. See the **Grace MathLib** article in the package's DocC documentation for the complete function reference.
 
 Let's take a look at a simple Grace program to see how this works:
 
 ```swift
 import StandardLib;
+import MathLib;
 
 enumeration Colors {
     red,

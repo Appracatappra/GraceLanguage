@@ -282,7 +282,7 @@ open class GraceRuntime {
     /// - Parameter script: The text of the snipit that does not contain a `main` definition. This code will automatically be wrapped in a generated `main`definition.
     /// - Returns: Returns the results of the execution as a `GraceVariable` or `nil` if nothing is returned.
     @discardableResult public func run(script:String) throws -> GraceVariable? {
-        let program:String = "import StandardLib; import StringLib; import MacroLib; main{\(script);}"
+        let program:String = "import StandardLib; import StringLib; import MacroLib; import MathLib; main{\(script);}"
         
         return try run(program: program)
     }
@@ -304,7 +304,7 @@ open class GraceRuntime {
     /// - Parameter script: The text of the snipit that does not contain a `main` or `return` definition. This code will automatically be wrapped in a generated `main` and `return`.
     /// - Returns: Returns the results of the execution as a `GraceVariable` or `nil` if nothing is returned.
     @discardableResult public func evaluate(script:String) throws -> GraceVariable? {
-        let program:String = "import StandardLib; import StringLib; import MacroLib; main{return \(script);}"
+        let program:String = "import StandardLib; import StringLib; import MacroLib; import MathLib; main{return \(script);}"
         
         return try run(program: program)
     }

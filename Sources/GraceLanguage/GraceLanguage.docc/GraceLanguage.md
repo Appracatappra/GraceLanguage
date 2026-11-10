@@ -17,7 +17,7 @@ From Wikipedia:
 
 In Grace **Enumerations**, **Structures** and **Functions** are defined in the **Global Space** along with a special function `main` that acts as the main entry point into the program.
 
-Additionally, library **Imports** and **Variables** can be defined in the **Global Space** and they will be available in everywhere throughout the Grace program. The `StandardLib` contains built-in `functions` such as `print` and `printf` and `StringLib` contains string manipulation `functions` such as `leftString` and `midString`.
+Additionally, library **Imports** and **Variables** can be defined in the **Global Space** and they will be available everywhere throughout the Grace program. The `StandardLib` contains built-in `functions` such as `print` and `printf`, `StringLib` contains string manipulation `functions` such as `leftString` and `midString`, and `MathLib` contains mathematical `functions` such as `squareRoot`, `sine`, and `round`.
 
 
 Let's take a look at a simple Grace program to see how this works:
@@ -25,6 +25,7 @@ Let's take a look at a simple Grace program to see how this works:
 ```swift
 import StandardLib;
 import StringLib;
+import MathLib;
 
 enumeration Colors {
     red,
@@ -200,6 +201,7 @@ Using this function, the snippet of code will be wrapped in the following Grace 
 import StandardLib;
 import StringLib;
 import MacroLib;
+import MathLib;
 
 main{
 	// Your code goes here...
@@ -253,5 +255,4 @@ For more information, please see the included documentation.
 # Documentation
 
 The **GraceLanguage Package** includes full **DocC Documentation** for all of Grace's features.
-
 

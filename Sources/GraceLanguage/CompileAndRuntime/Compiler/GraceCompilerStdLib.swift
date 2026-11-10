@@ -127,8 +127,8 @@ public extension GraceCompiler {
         executable.register(name: "random", parameterNames: ["from", "to"], parameterTypes: [.int, .int], returnType: .int) { parameters in
             var value:Int = 0
             
-            if let to = parameters["from"] {
-                if let from = parameters["to"] {
+            if let from = parameters["from"] {
+                if let to = parameters["to"] {
                     value = Int.random(in: from.int...to.int)
                 }
             }
