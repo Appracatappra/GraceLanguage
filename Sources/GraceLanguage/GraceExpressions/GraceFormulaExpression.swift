@@ -64,13 +64,22 @@ open class GraceFormulaExpression:GraceExpression {
             throw GraceRuntimeError.formulaError(message: "Missing or invalid left operator.")
         }
         
-        guard let rightValue = try rightOperand?.evaluate() else {
-            throw GraceRuntimeError.formulaError(message: "Missing or invalid right operator.")
-        }
-        
         // Auto convert type `.any` to allow calculations.
         if leftValue.type == .any {
             leftValue.autoCastType()
+        }
+
+        // Logical operations short-circuit before evaluating their right side.
+        let op = GraceKeyword.get(fromString: operation)
+        if op == .andSymbol && leftValue.type == .bool && !leftValue.bool {
+            return GraceVariable(name: "result", value: false)
+        }
+        if op == .orSymbol && leftValue.type == .bool && leftValue.bool {
+            return GraceVariable(name: "result", value: true)
+        }
+
+        guard let rightValue = try rightOperand?.evaluate() else {
+            throw GraceRuntimeError.formulaError(message: "Missing or invalid right operator.")
         }
         
         // Auto convert type `.any` to allow calculations.
@@ -79,8 +88,6 @@ open class GraceFormulaExpression:GraceExpression {
         }
         
         // Get operation key
-        let op = GraceKeyword.get(fromString: operation)
-        
         GraceRuntime.shared.logTracerEvent(type: .formulaExe, message: "Evaluating formula `\(leftValue.string) \(String(describing: op)) \(rightValue.string)`.")
         
         // Take action based on the left side type

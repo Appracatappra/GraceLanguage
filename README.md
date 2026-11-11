@@ -45,23 +45,6 @@ In Grace **Enumerations**, **Structures** and **Functions** are defined in the *
 
 Additionally, library **Imports** and **Variables** can be defined in the **Global Space** and they will be available everywhere throughout the Grace program. The StandardLib contains built-in functions such as `print` and `printf`. StringLib contains string manipulation functions such as `leftString` and `midString`. MathLib contains beginner-friendly mathematical functions such as `squareRoot`, `sine`, and `round`.
 
-## Grace MathLib
-
-Import `MathLib` to use arithmetic, powers, roots, logarithms, trigonometry, rounding, and floating-point utilities:
-
-```swift
-import MathLib;
-
-main {
-    var angle:float = @degreesToRadians(90);
-    var sineValue:float = @sine($angle);
-    var distance:float = @hypotenuse(3, 4);
-    return @round($distance);
-}
-```
-
-MathLib accepts loosely typed values, so integers, floats, and numeric strings can be used as inputs. Invalid conversions default to `0`. Mathematical functions preserve standard values such as `NaN`, positive and negative infinity, and signed zero. See the **Grace MathLib** article in the package's DocC documentation for the complete function reference.
-
 Let's take a look at a simple Grace program to see how this works:
 
 ```swift
@@ -119,22 +102,73 @@ So a few things to point out here:
 * `var` is used to define a variable.
 * `let` is used to modify a variable.
 * All instructions end with a semicolon `;`.
-* `@` is used to dereference a function (either internal or external).
-* `$` is used to dereference a variable.
-* `#` is used to dereference an `enumeration`.
+* `@` explicitly dereferences a function (either internal or external).
+* `$` explicitly dereferences a variable.
+* `#` explicitly dereferences an `enumeration`.
 * `~` is used to dereference a property of an `enumeration` or `structure`.
 * The functions `@print`, `@printf` and `@count` are defined in the `StandardLib` imported at the start of the program.
+* The explicit dereference characters remain supported, but they can be omitted when Grace can determine the intended symbol at runtime.
 
 
 ## Why Use The Special Dereference Characters?
 
 When designing the Grace Language, one of my driving factors was to keep the language small, light and fast. To achieve this goal, I chose to use *decorators* when dereferencing **Functions**, **Variables** and **Enumerations**.
 
-This allowed me to keep the `GraceCompiler` quick and small, since the *decorator* tells compiler exactly what it is processing, while not putting to much effort on the developer and not cluttering the language too much.
+This keeps the explicit path through the `GraceCompiler` and `GraceRuntime` quick and small, since the *decorator* identifies exactly what is being processed.
 
-This is also why you use the `let` and `call` keywords for modifying variables and calling functions and why expressions always follow the form `(value operator value)`.
+The characters remain the fastest and most explicit syntax, and existing Grace programs continue to work unchanged. For beginner-friendly code, Grace also accepts omitted dereference characters:
 
-These concessions keep the `GraceCompiler` from having to determine the developer's intent, thus speeding up the compile process.
+```swift
+main {
+    var first:int = 2;
+    var second:int = 3;
+    let first = (first + second);
+    print(first);
+}
+```
+
+An omitted name is resolved at runtime so it can find symbols in chained precompiled executables. Ordinary lookup favors a variable, then a zero-parameter function, then an enumeration. Syntax supplies stronger context: `calculate(...)` favors a function, `Colors~red` favors an enumeration, and the target of `let` must be a variable. If no symbol can be found, Grace reports a runtime error. There is no fallback to another symbol after a binding has been selected.
+
+## Expressions and Operator Precedence
+
+Every binary calculation, comparison, or logical expression must retain its own outer parentheses. A single expression can now contain any number of operands and operators:
+
+```swift
+let result = (a + b * c - d);
+
+if (a + b > c and enabled or override) {
+    print(result);
+}
+```
+
+Grace uses conventional precedence, from highest to lowest:
+
+1. Multiplication and division: `*`, `/`
+2. Addition and subtraction: `+`, `-`
+3. Comparisons: `=`, `!=`, `<`, `>`, `<=`, `>=`
+4. Logical AND: `&`, `and`
+5. Logical OR: `|`, `or`
+
+Operators at the same precedence evaluate from left to right. Inner parentheses override precedence, as in `((a + b) * c)`. Surrounding call, array, or collection delimiters do not replace the required expression parentheses, so a calculated argument is written as `calculate((a + b))` and a calculated array index as `values[(position + 1)]`.
+
+Logical `and` and `or` short-circuit. Chained comparisons such as `(a < b < c)` are rejected during compilation; write `(a < b and b < c)` instead.
+
+## Grace MathLib
+
+Import `MathLib` to use arithmetic, powers, roots, logarithms, trigonometry, rounding, and floating-point utilities. For example:
+
+```swift
+import MathLib;
+
+main {
+    var angle:float = @degreesToRadians(90);
+    var sineValue:float = @sine($angle);
+    var distance:float = @hypotenuse(3, 4);
+    return @round($distance);
+}
+```
+
+MathLib accepts loosely typed values, so integers, floats, and numeric strings can be used as inputs. Invalid conversions default to `0`. Mathematical functions preserve standard values such as `NaN`, positive and negative infinity, and signed zero. See the **Grace MathLib** article in the package's DocC documentation for the complete function reference.
 
 # Compiling and Executing Grace
 

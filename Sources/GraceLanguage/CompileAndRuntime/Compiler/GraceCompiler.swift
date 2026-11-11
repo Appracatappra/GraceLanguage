@@ -276,7 +276,7 @@ open class GraceCompiler {
             
             // Get next keyword
             let token = tokenizer.lookAhead()
-            let keyword = try getNextKeyword(from: tokenizer)
+            let keyword = try getNextKeyword(from: tokenizer, allowsUnknown: true)
             switch keyword {
             case .varKey:
                 let instruction = GraceVarInstruction()
@@ -298,7 +298,7 @@ open class GraceCompiler {
                 instruction.executable = executable
                 instruction.parent = parent
                 
-                try ensureNextElementMatches(tokenizer: tokenizer, keyword: .atSymbol)
+                consumeOptionalDereference(.atSymbol, from: tokenizer)
                 
                 instruction.functionName = tokenizer.pop().value
                 
@@ -314,11 +314,24 @@ open class GraceCompiler {
                 try ensureNextElementMatches(tokenizer: tokenizer, keyword: .semicolon)
                 
                 instructions.append(instruction)
+            case .unknown:
+                let instruction = GraceCallInstruction()
+                instruction.executable = executable
+                instruction.parent = parent
+                instruction.functionName = tokenizer.pop().value
+
+                guard GraceKeyword.get(fromString: tokenizer.lookAhead().value) == .openParenthesis else {
+                    throw GraceCompilerError.invalidKeyword(message: "Expected a function call after `\(instruction.functionName)`.", row: token.row, col: token.col)
+                }
+
+                instruction.parameters = try compileParameterCallList(tokenizer: tokenizer, executable: executable, for: instruction)
+                try ensureNextElementMatches(tokenizer: tokenizer, keyword: .semicolon)
+                instructions.append(instruction)
             case .incrementKey:
                 let instruction = GraceIncrementInstruction()
                 instruction.parent = parent
                 
-                try ensureNextElementMatches(tokenizer: tokenizer, keyword: .dollarSign)
+                consumeOptionalDereference(.dollarSign, from: tokenizer)
                 instruction.variableName = tokenizer.pop().value
                 try ensureNextElementMatches(tokenizer: tokenizer, keyword: .semicolon)
                 
@@ -327,7 +340,7 @@ open class GraceCompiler {
                 let instruction = GraceDecrementInstruction()
                 instruction.parent = parent
                 
-                try ensureNextElementMatches(tokenizer: tokenizer, keyword: .dollarSign)
+                consumeOptionalDereference(.dollarSign, from: tokenizer)
                 instruction.variableName = tokenizer.pop().value
                 try ensureNextElementMatches(tokenizer: tokenizer, keyword: .semicolon)
                 
@@ -350,7 +363,7 @@ open class GraceCompiler {
                 let instruction = GraceEmptyInstruction()
                 instruction.parent = parent
                 
-                try ensureNextElementMatches(tokenizer: tokenizer, keyword: .dollarSign)
+                consumeOptionalDereference(.dollarSign, from: tokenizer)
                 instruction.variableName = tokenizer.pop().value
                 try ensureNextElementMatches(tokenizer: tokenizer, keyword: .semicolon)
                 
@@ -361,7 +374,7 @@ open class GraceCompiler {
                 
                 instruction.iteratorName = tokenizer.pop().value
                 try ensureNextElementMatches(tokenizer: tokenizer, keyword: .inKey)
-                try ensureNextElementMatches(tokenizer: tokenizer, keyword: .dollarSign)
+                consumeOptionalDereference(.dollarSign, from: tokenizer)
                 instruction.variableName = tokenizer.pop().value
                 instruction.instructions = try compileInstructionSet(tokenizer: tokenizer, executable: executable, parent: instruction)
                 
@@ -500,7 +513,9 @@ open class GraceCompiler {
         
         try ensureNextElementMatches(tokenizer: tokenizer, keyword: .toKey)
         
-        try ensureNextElementMatches(tokenizer: tokenizer, keyword: .dollarSign)
+        if GraceKeyword.get(fromString: tokenizer.lookAhead().value) == .dollarSign {
+            tokenizer.pop()
+        }
         
         instruction.variableName = tokenizer.pop().value
         
@@ -532,7 +547,7 @@ open class GraceCompiler {
         
         try ensureNextElementMatches(tokenizer: tokenizer, keyword: .fromKey)
         
-        try ensureNextElementMatches(tokenizer: tokenizer, keyword: .dollarSign)
+        consumeOptionalDereference(.dollarSign, from: tokenizer)
         
         instruction.variableName = tokenizer.pop().value
         
@@ -623,7 +638,7 @@ open class GraceCompiler {
     ///   - instruction: The parent `GraceInstruction`.
     private func compileLetInstruction(tokenizer:GraceTokenizer, executable:GraceExecutable, for instruction:GraceLetInstruction) throws {
         
-        try ensureNextElementMatches(tokenizer: tokenizer, keyword: .dollarSign)
+        consumeOptionalDereference(.dollarSign, from: tokenizer)
         
         // Get name
         instruction.variableName = tokenizer.pop().value
@@ -711,13 +726,8 @@ open class GraceCompiler {
             
             return expression
         case .openParenthesis:
-            let expression = GraceFormulaExpression()
-            expression.leftOperand = try compileExpressionDefinition(tokenizer: tokenizer, executable: executable, for: instruction)
-            expression.operation = tokenizer.pop().value
-            expression.rightOperand = try compileExpressionDefinition(tokenizer: tokenizer, executable: executable, for: instruction)
-            
+            let expression = try compileBinaryExpression(tokenizer: tokenizer, executable: executable, for: instruction, minimumPrecedence: 1)
             try ensureNextElementMatches(tokenizer: tokenizer, keyword: .closedParenthesis)
-            
             return expression
         case .notKey:
             let expression = GraceNotExpression()
@@ -754,9 +764,92 @@ open class GraceCompiler {
             let element = tokenizer.pop()
             return GraceConstantExpression(exe: executable, value: "-\(element.value)")
         default:
-            // Assume constant
             let element = tokenizer.pop()
-            return GraceConstantExpression(exe: executable, value: element.value)
+            if element.type == .doubleQuotedString || element.type == .singleQuotedString || Double(element.value) != nil {
+                return GraceConstantExpression(exe: executable, value: element.value)
+            }
+
+            if tokenizer.lookAhead().value == "~" {
+                tokenizer.pop()
+                let expression = GraceEnumerationExpression()
+                expression.executable = executable
+                expression.enumerationName = element.value
+                expression.propertyName = tokenizer.pop().value
+                return expression
+            }
+
+            if tokenizer.lookAhead().value == "(" {
+                let expression = GraceFunctionExpression()
+                expression.executable = executable
+                expression.functionName = element.value
+                expression.parameters = try compileParameterCallList(tokenizer: tokenizer, executable: executable, for: instruction)
+                return expression
+            }
+
+            if tokenizer.lookAhead().value == "[" {
+                tokenizer.pop()
+                let expression = GraceVariableExpression()
+                expression.parent = instruction
+                expression.variableName = element.value
+                expression.indexExpression = try compileExpressionDefinition(tokenizer: tokenizer, executable: executable, for: instruction)
+                try ensureNextElementMatches(tokenizer: tokenizer, keyword: .closedSquareBracket)
+                return expression
+            }
+
+            let expression = GraceInferredExpression()
+            expression.parent = instruction
+            expression.executable = executable
+            expression.name = element.value
+            expression.coreExe = executable
+            return expression
+        }
+    }
+
+    /// Builds a binary expression tree using conventional operator precedence.
+    private func compileBinaryExpression(tokenizer: GraceTokenizer, executable: GraceExecutable, for instruction: GraceInstruction, minimumPrecedence: Int) throws -> GraceExpression? {
+        var left = try compileExpressionDefinition(tokenizer: tokenizer, executable: executable, for: instruction)
+
+        while let precedence = binaryPrecedence(for: tokenizer.lookAhead().value), precedence >= minimumPrecedence {
+            let operation = tokenizer.pop()
+
+            if isComparison(operation.value), let formula = left as? GraceFormulaExpression, isComparison(formula.operation) {
+                throw GraceCompilerError.invalidKeyword(message: "Chained comparisons are not supported. Join comparisons with `and` or `or`.", row: operation.row, col: operation.col)
+            }
+
+            let right = try compileBinaryExpression(tokenizer: tokenizer, executable: executable, for: instruction, minimumPrecedence: precedence + 1)
+            let expression = GraceFormulaExpression()
+            expression.leftOperand = left
+            expression.operation = operation.value
+            expression.rightOperand = right
+            left = expression
+        }
+
+        return left
+    }
+
+    private func binaryPrecedence(for operation: String) -> Int? {
+        switch GraceKeyword.get(fromString: operation) {
+        case .orSymbol:
+            return 1
+        case .andSymbol:
+            return 2
+        case .equal, .notEqual, .lessThan, .greaterThan, .lessThanOrEqualTo, .greaterThanOrEqualTo:
+            return 3
+        case .plus, .minus:
+            return 4
+        case .asterisk, .forwardSlash:
+            return 5
+        default:
+            return nil
+        }
+    }
+
+    private func isComparison(_ operation: String) -> Bool {
+        switch GraceKeyword.get(fromString: operation) {
+        case .equal, .notEqual, .lessThan, .greaterThan, .lessThanOrEqualTo, .greaterThanOrEqualTo:
+            return true
+        default:
+            return false
         }
     }
     
@@ -1054,6 +1147,12 @@ open class GraceCompiler {
             return true
         } else {
             return false
+        }
+    }
+
+    private func consumeOptionalDereference(_ keyword: GraceKeyword, from tokenizer: GraceTokenizer) {
+        if GraceKeyword.get(fromString: tokenizer.lookAhead().value) == keyword {
+            tokenizer.pop()
         }
     }
     

@@ -16,7 +16,7 @@ if (value operator value) {
 }]
 ```
 
-Grace comparisons must always be in parenthesis and be in the form `(value operator value)`. The following operators are supported:
+Grace comparisons must always have their own outer parentheses. A comparison can contain multiple arithmetic, comparison, and logical operations, such as `(a + b > c and enabled)`. The following operators are supported:
 
 * `=`, `equal`, `equals` - Test for equality.
 * `!=`, `not_equal` - Does not equal.
@@ -26,6 +26,10 @@ Grace comparisons must always be in parenthesis and be in the form `(value opera
 * `>=`, `greater_or_equal` - Greater than or equal to.
 * `&`, `and` - And two boolean values.
 * `|`, `or` - Or two boolean values.
+
+Conventional precedence applies: multiplication and division, addition and subtraction, comparisons, logical AND, then logical OR. Inner parentheses override precedence. Logical AND and OR short-circuit, so an unnecessary right-hand expression is not evaluated.
+
+Chained comparisons are intentionally rejected during compilation. Write `(a < b and b < c)` instead of `(a < b < c)`.
 
 If the condition is met, all of the instructions are executed else all instructions in the optional `else` statement are executed.
 

@@ -78,22 +78,23 @@ So a few things to point out here:
 * `var` is used to define a variable.
 * `let` is used to modify a variable.
 * All instructions end with a semicolon `;`.
-* `@` is used to dereference a function (either internal or external).
-* `$` is used to dereference a variable.
-* `#` is used to dereference an `enumeration`.
+* `@` explicitly dereferences a function (either internal or external).
+* `$` explicitly dereferences a variable.
+* `#` explicitly dereferences an `enumeration`.
 * `~` is used to dereference a property of an `enumeration` or `structure`.
 * The functions `@print`, `@printf` and `@count` are defined in the `StandardLib` imported at the start of the program.
+* Dereference characters can be omitted when runtime inference is desired.
 
 
 ## Why Use The Special Dereference Characters?
 
 When designing the Grace Language, one of my driving factors was to keep the language small, light and fast. To achieve this goal, I chose to use *decorators* when dereferencing **Functions**, **Variables** and **Enumerations**.
 
-This allowed me to keep the `GraceCompiler` quick and small, since the *decorator* tells compiler exactly what it is processing, while not putting to much effort on the developer and not cluttering the language too much.
+This keeps the explicit path through the `GraceCompiler` and `GraceRuntime` quick and small, since the *decorator* identifies exactly what is being processed.
 
-This is also why you use the `let` and `call` keywords for modifying variables and calling functions and why expressions always follow the form `(value operator value)`.
+The explicit characters remain supported for performance and backward compatibility. Grace can also compile an omitted identifier into a runtime lookup, allowing it to resolve symbols exposed by a chained executable after compilation.
 
-These concessions keep the `GraceCompiler` from having to determine the developer's intent, thus speeding up the compile process.
+See <doc:Grace-Expressions> for runtime resolution rules, multi-operator expressions, precedence, grouping, and short-circuit behavior.
 
 ## Compiling and Executing Grace
 
@@ -256,3 +257,11 @@ For more information, please see the included documentation.
 
 The **GraceLanguage Package** includes full **DocC Documentation** for all of Grace's features.
 
+## Topics
+
+### Language Guide
+
+- <doc:Grace-Expressions>
+- <doc:Grace-Variables>
+- <doc:Grace-Functions>
+- <doc:Grace-Flow-Control>

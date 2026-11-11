@@ -8,6 +8,8 @@ In Grace, the `var` keyword is used to define a variable and variables are scope
 
 The exception to this rule is variables created inside of the **Global Space**, they are accessible everywhere inside of the Grace program.
 
+Variable references can use the explicit `$` dereference or omit it. The explicit form remains the fastest, unambiguous path. An omitted name is resolved at runtime, which allows it to find variables in chained executables.
+
 It should also be noted that creating a variable of the same name as a variable at the same scope level will replace the existing variable with the new one.
 
 Grace supports the following variable types:
@@ -47,7 +49,7 @@ The minimal requirement is name and type, the default value is optional. Default
 
 When modifying a variable, start with the `let` keyword and use the following form:
 
-`let $` name `=` expression `;`
+`let` [`$`] name `=` expression `;`
 
 The following types of expressions are supported:
 
@@ -56,6 +58,8 @@ The following types of expressions are supported:
 * Functions `let $y = @add($n, $x);`
 * Enumerations `let $color = #Colors~blue;`
 * Expressions `let $z = ($n + $y);`
+
+The same assignments can omit dereference characters, for example `let z = (n + y);`. Assignment context always requires an assignable variable; a function or enumeration with the same name is not a valid assignment target.
 
 ### Incrementing and Decrementing Ints/Floats
 
@@ -83,9 +87,11 @@ For example `var colors:string array = ["red", "yellow", "green"];` would create
 
 To access the items in an array, use the form:
 
-`$` name `[` index `]`
+`[$]` name `[` index `]`
 
 Given the example above `$colors[1]` would return "yellow", since Grace arrays are zero based. You can modify an array item in the same way. So `let $colors[2] = "lime";` would change the last value in the array from "green" to "lime".
+
+The inferred forms `colors[1]` and `let colors[2] = "lime";` are also valid. A calculated index needs dedicated expression parentheses, for example `colors[(position + 1)]`.
 
 #### Modifying Arrays
 

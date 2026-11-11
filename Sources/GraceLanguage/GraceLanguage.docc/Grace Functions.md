@@ -134,7 +134,9 @@ main {
 }
 ```
 
-> When calling a Grace `function` you simply list the property values without the names in the order that they were defined. Additionally, the name of the function must be proceeded by a `@`. Use the `call` statement to call a function outside of a formula.
+> When calling a Grace `function`, list parameter values without names in their declared order. The explicit `@` dereference remains supported, but call syntax such as `sayHi("Bob")` favors function lookup automatically. Both `call @sayHi("Bob");`, `call sayHi("Bob");`, and `sayHi("Bob");` are valid standalone calls.
+
+A bare unprefixed name can call a zero-parameter function when no variable with that name wins ordinary runtime lookup. If the selected function requires parameters, Grace reports a runtime error.
 
 Grace `functions` can also be called inside of a formula. For example:
 
@@ -146,9 +148,11 @@ main {
 }
 
 function add(a:int, b:int) returns int {
-	return ($a + $b);
+		return ($a + $b);
 }
 ```
+
+The inferred equivalent is `let n = (add(1, 1) + 1);`. When a calculated value is passed as an argument, the calculation keeps its own parentheses, for example `print((a + b));`.
 
 
 Grace `functions` fully support recursion such as the following example:
